@@ -9,7 +9,7 @@ public class King extends Piece {
 
     boolean isValidMove(Piece[][] board, int startX, int startY, int endX, int endY) {
         
-        if(Chess.isCheck(board, endX, endY)){
+        if(MyFrame.isCheck(board, endX, endY)){
             return false;
         }
 

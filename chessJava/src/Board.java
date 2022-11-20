@@ -35,8 +35,19 @@ public class Board {
         }
     }
 
-    void updateBoard(int startX, int startY, int endX, int endY) {
+    public void updateBoard(int startX, int startY, int endX, int endY) {
         board[endX][endY] = board[startX][startY];
         board[startX][startY] = null;
     }
+
+    public Piece[][] flipBoard(){
+       Piece[][] flipped = new Piece[8][8];
+       for(int i = 0; i<8; i++){
+        for(int j = 0; j<8; j++){
+            flipped[7-i][7-j]=board[i][j];
+        }
+       }
+       return flipped;
+    }
+    
 }

@@ -7,8 +7,10 @@ public class Rook extends Piece {
     }
 
     boolean isValidMove(Piece[][] board, int startX, int startY, int endX, int endY){
-        if (this.color == board[endX][endY].color) {
-            return false;
+        if(board[endX][endY]!=null){
+            if (this.color == board[endX][endY].color) {
+                return false;
+            }
         }
         if (startX == endX) {
             if (startY < endY) {
