@@ -3,9 +3,7 @@
 3. king elephant swap 
 4. pawn reach other end upgrade
 5. enpassant
-6. fix all outobounds//
 7. use ischeckmate
 8. use is check
 9. use is stalemate
-10. fix updategui and kill
 11. 

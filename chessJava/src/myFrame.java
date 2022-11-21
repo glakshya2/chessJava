@@ -3,7 +3,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
-//TODO: 1. Fix pawn possibleMoves()
 //TODO: 2. pawn can not kill king but can check and checkmate king
 //TODO: 3. king elephant swap 
 //TODO: 4. pawn reach other end upgrade
@@ -383,9 +382,7 @@ public class MyFrame extends JFrame implements MouseListener {
         int y = 7 - e.getComponent().getY() / e.getComponent().getHeight();
         if (gameBoard.board[x][y] != null) {
             if (gameBoard.board[x][y].color == Turn) {
-                if (x != selectedX && y != selectedY) {
                     selectPiece(x, y);
-                }
             } else if (isSelected) {
                 movePiece(x, y);
             }
