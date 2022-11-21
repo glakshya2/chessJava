@@ -386,9 +386,10 @@ public class MyFrame extends JFrame implements MouseListener {
                 if (x != selectedX && y != selectedY) {
                     selectPiece(x, y);
                 }
+            } else if (isSelected) {
+                movePiece(x, y);
             }
         } else if (isSelected) {
-            System.out.println("x");
             movePiece(x, y);
         }
     }
