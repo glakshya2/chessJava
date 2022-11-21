@@ -6,8 +6,10 @@ public class Bishop extends Piece{
     }
 
     boolean isValidMove(Piece[][] board, int startX, int startY, int endX, int endY){
-        if (this.color == board[endX][endY].color) {
-            return false;
+        if(board[endX][endY]!=null){
+            if (this.color == board[endX][endY].color) {
+                return false;
+            }
         }
         if (startX < endX && startY < endY) {
             int j = startY + 1;
@@ -49,38 +51,53 @@ public class Bishop extends Piece{
         Vector<Integer> list = new Vector<Integer>();
         int j = startY + 1;
         for (int i = startX + 1; i < 8; i++) {
-            if (isValidMove(board, startX, startY, i, j)) {
-                list.add((i * 10) + j);
-                j++;
+            if(j<8){
+                if (isValidMove(board, startX, startY, i, j)) {
+                    list.add((i * 10) + j);
+                    j++;
+                } else {
+                    break;
+                }
             } else {
                 break;
             }
         }
         j = startY + 1;
         for (int i = startX - 1; i >= 0; i--) {
-            if (isValidMove(board, startX, startY, i, j)) {
-                list.add((i * 10) + j);
-                j++;
-            } else {
+            if(j<8){
+                if (isValidMove(board, startX, startY, i, j)) {
+                    list.add((i * 10) + j);
+                    j++;
+                } else {
+                    break;
+                }
+            }else{
                 break;
             }
         }
         j = startY - 1;
         for (int i = startX + 1; i < 8; i++) {
-            if (isValidMove(board, startX, startY, i, j)) {
-                list.add((i * 10) + j);
-                j--;
-            } else {
+            if(j>=0){
+                if (isValidMove(board, startX, startY, i, j)) {
+                    list.add((i * 10) + j);
+                    j--;
+                } else {
+                    break;
+                }
+            }
+            else{
                 break;
             }
         }
         j = startY - 1;
         for (int i = startX - 1; i >= 0; i--) {
-            if (isValidMove(board, startX, startY, i, j)) {
-                list.add((i * 10) + j);
-                j--;
-            } else {
-                break;
+            if(j>=0){
+                if (isValidMove(board, startX, startY, i, j)) {
+                    list.add((i * 10) + j);
+                    j--;
+                } else {
+                    break;
+                }
             }
         }
         return list;

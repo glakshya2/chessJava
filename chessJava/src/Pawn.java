@@ -7,6 +7,10 @@ public class Pawn extends Piece {
         super(color);
     }
 
+    public void updateFirstMove(){
+        isFirstMove = false;
+    }
+
     boolean isValidMove(Piece[][] board, int startX, int startY, int endX, int endY) {
         boolean isValid;
         if (endY == startY + 2) {

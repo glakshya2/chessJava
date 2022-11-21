@@ -45,8 +45,10 @@ public class MyFrame extends JFrame implements MouseListener {
             return new ImageIcon("RookB.png");
         } else if (s == "Queen" && color == true) {
             return new ImageIcon("QueenW.png");
-        } else {
+        } else if (s == "Queen" && color == false) {
             return new ImageIcon("QueenB.png");
+        } else {
+            return null;
         }
     }
 
@@ -61,9 +63,11 @@ public class MyFrame extends JFrame implements MouseListener {
     public int getY(int compNo) {
         return 7 - (compNo / 8);
     }
+
     /*
      * public void updateGUI(int startX, int startY, int endX, int endY) {
      * highlighted.clear();
+     * mainPanel.removeAll();
      * JPanel initial = (JPanel) panel.getComponent(getCompNo(startX, startY));
      * JLabel in = (JLabel) initial.getComponent(0);
      * JPanel fin = (JPanel) panel.getComponent((endX + (8 - endY) * 8) - 1);
@@ -81,6 +85,7 @@ public class MyFrame extends JFrame implements MouseListener {
      * mainPanel.repaint();
      * }
      * 
+     * 
      */
 
     public void clearHighlight() {
@@ -90,11 +95,13 @@ public class MyFrame extends JFrame implements MouseListener {
                         .getSimpleName();
                 boolean color = gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))].color;
                 ImageIcon img = returnImg(s, color);
-                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).remove(1);
-                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).remove(0);
+                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).removeAll();
+                // ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).remove(1);
                 ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).add(new JLabel(img));
             } else {
-                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).remove(0);
+                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).removeAll();
+                mainPanel.validate();
+                mainPanel.repaint();
                 ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).add(new JLabel(new ImageIcon()));
             }
         }
@@ -125,9 +132,9 @@ public class MyFrame extends JFrame implements MouseListener {
                         .getSimpleName();
                 boolean color = gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))].color;
                 ImageIcon img = returnImg(s, color);
-                // ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).remove(0);
-                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).add(new JLabel(img));
+                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).removeAll();
                 ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon("YellowDot.png")));
+                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).add(new JLabel(img));
             } else {
                 ((JPanel) mainPanel.getComponent(compNo)).remove(0);
                 ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon("YellowDot.png")));
@@ -143,7 +150,9 @@ public class MyFrame extends JFrame implements MouseListener {
         selectedX = x;
         selectedY = y;
         highlightPossible(x, y);
-        isSelected = true;
+        if (highlighted.size() != 0) {
+            isSelected = true;
+        }
     }
 
     public void updateGame(int x, int y) {
@@ -153,29 +162,35 @@ public class MyFrame extends JFrame implements MouseListener {
         String s = gameBoard.board[selectedX][selectedY].getClass().getSimpleName();
         boolean color = gameBoard.board[selectedX][selectedY].color;
         ImageIcon img = returnImg(s, color);
-        gameBoard.updateBoard(selectedX, selectedY, x, y);
         if (gameBoard.board[x][y] != null) {
-            ((JPanel) mainPanel.getComponent(newCompNo)).remove(0);
+            ((JPanel) mainPanel.getComponent(newCompNo)).removeAll();
             ((JPanel) mainPanel.getComponent(newCompNo)).add(new JLabel(img));
-            ((JPanel) mainPanel.getComponent(compNo)).remove(0);
+            ((JPanel) mainPanel.getComponent(compNo)).removeAll();
             ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon()));
         } else {
-            ((JPanel) mainPanel.getComponent(newCompNo)).remove(0);
+            ((JPanel) mainPanel.getComponent(newCompNo)).removeAll();
             ((JPanel) mainPanel.getComponent(newCompNo)).add(new JLabel(img));
-            ((JPanel) mainPanel.getComponent(compNo)).remove(0);
+            ((JPanel) mainPanel.getComponent(compNo)).removeAll();
             ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon()));
         }
-        mainPanel.validate();
         gameBoard.updateBoard(selectedX, selectedY, x, y);
+        if (gameBoard.board[x][y].getClass().getSimpleName() == "Pawn") {
+            gameBoard.board[x][y].updateFirstMove();
+        }
+        mainPanel.validate();
+        // gameBoard.updateBoard(selectedX, selectedY, x, y);
         isSelected = false;
         Turn = !Turn;
     }
+
     public void movePiece(int x, int y) {
         for (int i = 0; i < highlighted.size(); i++) {
             if (getX(highlighted.elementAt(i)) == x && getY(highlighted.elementAt(i)) == y) {
                 updateGame(x, y);
+                break;
             }
         }
+        isSelected = false;
     }
 
     public MyFrame() {
@@ -234,14 +249,17 @@ public class MyFrame extends JFrame implements MouseListener {
         frame.pack();
     }
 
-    static boolean isCheck(Piece[][] board, int kingX, int kingY) {
-        boolean color = board[kingX][kingY].color;
+    static boolean isCheck(Piece[][] board, int kingX, int kingY, boolean color) {
+        // boolean color = board[kingX][kingY].color;
         int king = (kingX * 10) + kingY;
         for (int i = 0; i < 8; i++) {
             Vector<Integer> list = new Vector<Integer>();
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] != null) {
                     if (color != board[i][j].color) {
+                        if (board[i][j].getClass().getSimpleName() == "King") {
+                            continue;
+                        }
                         list = board[i][j].possibleMoves(board, i, j);
                         for (int k = 0; k < list.size(); k++) {
                             if (list.get(k) == king) {
@@ -288,7 +306,8 @@ public class MyFrame extends JFrame implements MouseListener {
             Board temp = new Board();
             temp.board = board;
             temp.updateBoard(kingX, kingY, (list.get(i) / 10), (list.get(i) % 10));
-            if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10)) {
+            if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10,
+                    temp.board[(list.get(i) / 10)][list.get(0 % 10)].color)) {
                 return false;
             }
         }
@@ -321,7 +340,8 @@ public class MyFrame extends JFrame implements MouseListener {
                                 Board temp = new Board();
                                 temp.board = board;
                                 temp.updateBoard(i, j, (list1.get(k) / 10), (list1.get(k) % 10));
-                                if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10)) {
+                                if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10,
+                                        temp.board[(list.get(i) / 10)][list.get(0 % 10)].color)) {
                                     return false;
                                 }
                             }
@@ -334,7 +354,7 @@ public class MyFrame extends JFrame implements MouseListener {
     }
 
     static boolean isStaleMate(Piece[][] board, boolean color, int kingX, int kingY) {
-        if (!isCheck(board, kingX, kingY)) {
+        if (!isCheck(board, kingX, kingY, board[kingX][kingY].color)) {
             return false;
         }
         for (int i = 0; i < 8; i++) {
@@ -363,9 +383,12 @@ public class MyFrame extends JFrame implements MouseListener {
         int y = 7 - e.getComponent().getY() / e.getComponent().getHeight();
         if (gameBoard.board[x][y] != null) {
             if (gameBoard.board[x][y].color == Turn) {
-                selectPiece(x, y);
+                if (x != selectedX && y != selectedY) {
+                    selectPiece(x, y);
+                }
             }
         } else if (isSelected) {
+            System.out.println("x");
             movePiece(x, y);
         }
     }

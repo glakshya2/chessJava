@@ -14,29 +14,37 @@ public class Rook extends Piece {
         }
         if (startX == endX) {
             if (startY < endY) {
-                for (int i = startY + 1; i < endY; i++) {
+                for (int i = startY + 1; i <= endY; i++) {
                     if (board[startX][i] != null) {
-                        return false;
+                        if(board[startX][i].color == color){
+                            return false;
+                        }
                     }
                 }
             } else {
-                for (int i = startY - 1; i > endY; i--) {
+                for (int i = startY - 1; i >= endY; i--) {
                     if (board[startX][i] != null) {
-                        return false;
+                        if(board[startX][i].color = color){
+                            return false;
+                        }
                     }
                 }
             }
         } else if (startY == endY) {
             if (startX < endX) {
-                for (int i = startX + 1; i < endX; i++) {
+                for (int i = startX + 1; i <= endX; i++) {
                     if (board[i][startY] != null) {
-                        return false;
+                        if(board[i][startY].color = color){
+                            return false;
+                        }
                     }
                 }
             } else {
-                for (int i = startX - 1; i > endX; i++) {
+                for (int i = startX - 1; i >= endX; i--) {
                     if (board[i][startY] != null) {
-                        return false;
+                        if(board[i][startY].color = color){
+                            return false;
+                        }
                     }
                 }
             }
@@ -49,6 +57,9 @@ public class Rook extends Piece {
         for (int i = startY + 1; i < 8; i++) {
             if (isValidMove(board, startX, startY, startX, i)) {
                 list.add((startX * 10) + i);
+                if(board[startX][i]!=null){
+                    break;
+                }
             } else {
                 break;
             }
@@ -56,6 +67,9 @@ public class Rook extends Piece {
         for (int i = startY - 1; i >= 0; i--) {
             if (isValidMove(board, startX, startY, startX, i)) {
                 list.add((startX * 10) + i);
+                if(board[startX][i]!=null){
+                    break;
+                }
             } else {
                 break;
             }
@@ -63,6 +77,9 @@ public class Rook extends Piece {
         for (int i = startX + 1; i < 8; i++) {
             if (isValidMove(board, startX, startY, i, startY)) {
                 list.add((i * 10) + startY);
+                if(board[i][startY]!=null){
+                    break;
+                }
             } else {
                 break;
             }
@@ -70,6 +87,9 @@ public class Rook extends Piece {
         for (int i = startX - 1; i >= 0; i--) {
             if (isValidMove(board, startX, startY, i, startY)) {
                 list.add((i * 10) + startY);
+                if(board[i][startY]!=null){
+                    break;
+                }
             } else {
                 break;
             }

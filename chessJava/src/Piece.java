@@ -17,4 +17,8 @@ public abstract class Piece {
     }
 
     abstract Vector<Integer> possibleMoves(Piece[][] board, int startX, int startY);
+
+    public void updateFirstMove(){
+        
+    }
 }
