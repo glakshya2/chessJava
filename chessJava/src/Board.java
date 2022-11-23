@@ -1,10 +1,7 @@
-//import java.util.*;
-
 public class Board {
     public Piece[][] board = new Piece[8][8];
-    public int whitePieces = 16;
-    public int blackPieces = 16;
 
+    // Set positions of pieces to their initial positions
     void set() {
         board[0][0] = new Rook(true);
         board[1][0] = new Knight(true);
@@ -35,28 +32,52 @@ public class Board {
         }
     }
 
+    // update board when move is perfomed
     public void updateBoard(int startX, int startY, int endX, int endY) {
         board[endX][endY] = board[startX][startY];
         board[startX][startY] = null;
     }
 
-    public Piece[][] flipBoard(){
-       Piece[][] flipped = new Piece[8][8];
-       for(int i = 0; i<8; i++){
-        for(int j = 0; j<8; j++){
-            flipped[7-i][7-j]=board[i][j];
-        }
-       }
-       return flipped;
-    }
-    
-    public static Piece[][] flipBoard(Piece[][] board){
+    // Returns a flipped board for calculation of possible moves of black pieces
+    public Piece[][] flipBoard() {
         Piece[][] flipped = new Piece[8][8];
-        for(int i = 0; i<8; i++){
-            for(int j = 0; j<8; j++){
-                flipped[7-i][7-j]= board[i][j];
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                flipped[7 - i][7 - j] = board[i][j];
             }
         }
         return flipped;
+    }
+
+    // Returns x coord of king of given color
+    public int returnKingX(boolean color) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] != null) {
+                    if (board[i][j].color == color) {
+                        if (board[i][j].getClass().getSimpleName().equals("King")) {
+                            return i;
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    // Returns y coord of king of given color
+    public int returnKingY(boolean color) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] != null) {
+                    if (board[i][j].color == color) {
+                        if (board[i][j].getClass().getSimpleName().equals("King")) {
+                            return j;
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
     }
 }

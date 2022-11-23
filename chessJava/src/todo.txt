@@ -1,9 +1,8 @@
-1. center div
-2. pawn can not kill king but can check and checkmate king //10min
-3. king elephant swap 
-4. pawn reach other end upgrade
-5. enpassant
-7. use ischeckmate
-8. use is check
-9. use is stalemate
-11. 
+1. center icons
+2. pawn can not kill king but can check and checkmate king
+3. implement castling
+4. implemment pawn promotion
+5. implement enpassant
+6. fix ischeckmate
+7. use is stalemate and implement 3 move repeat condition for staemate
+8. fix piece changing color on certain moves

@@ -1,12 +1,7 @@
 import javax.swing.*;
-//import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
-//TODO: 2. pawn can not kill king but can check and checkmate king
-//TODO: 3. king elephant swap 
-//TODO: 4. pawn reach other end upgrade
-//TODO: 5. Stalemate if 3 moves repeated
 
 public class MyFrame extends JFrame implements MouseListener {
 
@@ -14,79 +9,59 @@ public class MyFrame extends JFrame implements MouseListener {
     JPanel mainPanel;
     JPanel panel;
     JFrame frame;
-    JPanel boxPanel;
-    boolean Turn = true; // True for white, false for black
+    boolean turn = true; // True for white, false for black
     Vector<Integer> highlighted = new Vector<Integer>();
     boolean isSelected = false;
     int selectedX;
     int selectedY;
 
+    // Returns an ImageIcon for given piece
     public ImageIcon returnImg(String s, boolean color) {
-        if (s == "Bishop" && color == true) {
+        if (s.equals("Bishop") && color) {
             return new ImageIcon("BishopW.png");
-        } else if (s == "Bishop" && color == false) {
+        } else if (s.equals("Bishop") && !color) {
             return new ImageIcon("BishopB.png");
-        } else if (s == "King" && color == true) {
+        } else if (s.equals("King") && color) {
             return new ImageIcon("KingW.png");
-        } else if (s == "King" && color == false) {
+        } else if (s.equals("King") && !color) {
             return new ImageIcon("KingB.png");
-        } else if (s == "Knight" && color == true) {
+        } else if (s.equals("Knight") && color) {
             return new ImageIcon("HorseW.png");
-        } else if (s == "Knight" && color == false) {
+        } else if (s.equals("Knight") && !color) {
             return new ImageIcon("HorseB.png");
-        } else if (s == "Pawn" && color == true) {
+        } else if (s.equals("Pawn") && color) {
             return new ImageIcon("PawnW.png");
-        } else if (s == "Pawn" && color == false) {
+        } else if (s.equals("Pawn") && !color) {
             return new ImageIcon("PawnB.png");
-        } else if (s == "Rook" && color == true) {
+        } else if (s.equals("Rook") && color) {
             return new ImageIcon("RookW.png");
-        } else if (s == "Rook" && color == false) {
+        } else if (s.equals("Rook") && !color) {
             return new ImageIcon("RookB.png");
-        } else if (s == "Queen" && color == true) {
+        } else if (s.equals("Queen") && color) {
             return new ImageIcon("QueenW.png");
-        } else if (s == "Queen" && color == false) {
+        } else if (s.equals("Queen") && !color) {
             return new ImageIcon("QueenB.png");
         } else {
             return null;
         }
     }
 
+    // Returns Component no for updating components in gui
     public int getCompNo(int x, int y) {
         return 63 - (8 * (y + 1)) + (x + 1);
     }
 
+    // Returns x coord of given component
     public int getX(int compNo) {
         return compNo % 8;
     }
 
+    // Returns y coord of given component
     public int getY(int compNo) {
         return 7 - (compNo / 8);
     }
 
-    /*
-     * public void updateGUI(int startX, int startY, int endX, int endY) {
-     * highlighted.clear();
-     * mainPanel.removeAll();
-     * JPanel initial = (JPanel) panel.getComponent(getCompNo(startX, startY));
-     * JLabel in = (JLabel) initial.getComponent(0);
-     * JPanel fin = (JPanel) panel.getComponent((endX + (8 - endY) * 8) - 1);
-     * JLabel finL = (JLabel) fin.getComponent(0);
-     * finL.setIcon(in.getIcon());
-     * in.setIcon(null);
-     * int c = endX + (8 - endY) * 8 - 1;
-     * JPanel a = ((JPanel) panel.getComponent(c));
-     * JLabel d = ((JLabel) a.getComponent(0));
-     * String s = gameBoard.board[endX][endY].getClass().getSimpleName();
-     * boolean color = gameBoard.board[endX][endY].color;
-     * ImageIcon img = returnImg(s, color);
-     * d.setIcon(img);
-     * mainPanel.validate();
-     * mainPanel.repaint();
-     * }
-     * 
-     * 
-     */
-
+    // Removes all yellow dots used for highlighting possible movesfrom GUI
     public void clearHighlight() {
         for (int i = 0; i < highlighted.size(); i++) {
             if (gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))] != null) {
@@ -95,12 +70,9 @@ public class MyFrame extends JFrame implements MouseListener {
                 boolean color = gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))].color;
                 ImageIcon img = returnImg(s, color);
                 ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).removeAll();
-                // ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).remove(1);
                 ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).add(new JLabel(img));
             } else {
                 ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).removeAll();
-                mainPanel.validate();
-                mainPanel.repaint();
                 ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).add(new JLabel(new ImageIcon()));
             }
         }
@@ -109,17 +81,19 @@ public class MyFrame extends JFrame implements MouseListener {
         highlighted.clear();
     }
 
+    // Highlights possible moves of selected piece in GUI
     public void highlightPossible(int x, int y) {
         clearHighlight();
         Vector<Integer> list = new Vector<Integer>();
-        if (Turn) {
+        if (turn) {
             list = gameBoard.board[x][y].possibleMoves(gameBoard.board, x, y);
         } else {
             list = gameBoard.board[x][y].possibleMoves(gameBoard.flipBoard(), 7 - x, 7 - y);
         }
         for (int i = 0; i < list.size(); i++) {
-            int listX = list.elementAt(i) / 10, listY = list.elementAt(i) % 10;
-            if (!Turn) {
+            int listX = list.elementAt(i) / 10;
+            int listY = list.elementAt(i) % 10;
+            if (!turn) {
                 listX = 7 - listX;
                 listY = 7 - listY;
             }
@@ -145,15 +119,17 @@ public class MyFrame extends JFrame implements MouseListener {
         mainPanel.repaint();
     }
 
+    // Selects piece that was clicked on and highlights possible moves
     public void selectPiece(int x, int y) {
         selectedX = x;
         selectedY = y;
         highlightPossible(x, y);
-        if (highlighted.size() != 0) {
+        if (!highlighted.isEmpty()) {
             isSelected = true;
         }
     }
 
+    // Updates game state after making move
     public void updateGame(int x, int y) {
         clearHighlight();
         int compNo = getCompNo(selectedX, selectedY);
@@ -173,15 +149,22 @@ public class MyFrame extends JFrame implements MouseListener {
             ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon()));
         }
         gameBoard.updateBoard(selectedX, selectedY, x, y);
-        if (gameBoard.board[x][y].getClass().getSimpleName() == "Pawn") {
+        if (gameBoard.board[x][y].getClass().getSimpleName().equals("Pawn")) {
             gameBoard.board[x][y].updateFirstMove();
         }
         mainPanel.validate();
-        // gameBoard.updateBoard(selectedX, selectedY, x, y);
         isSelected = false;
-        Turn = !Turn;
+        int kingX = gameBoard.returnKingX(!turn);
+        int kingY = gameBoard.returnKingY(!turn);
+        if (isCheckMate(gameBoard.board, kingX, kingY)) {
+            JOptionPane.showMessageDialog(frame, "Check Mate");
+        } else if (isCheck(gameBoard.board, kingX, kingY, !turn)) {
+            JOptionPane.showMessageDialog(frame, "Check");
+        }
+        turn = !turn;
     }
 
+    // Moves selected piece to selected position
     public void movePiece(int x, int y) {
         for (int i = 0; i < highlighted.size(); i++) {
             if (getX(highlighted.elementAt(i)) == x && getY(highlighted.elementAt(i)) == y) {
@@ -189,9 +172,9 @@ public class MyFrame extends JFrame implements MouseListener {
                 break;
             }
         }
-        isSelected = false;
     }
 
+    // Creates GUI and sets up board
     public MyFrame() {
 
         gameBoard.set();
@@ -242,21 +225,21 @@ public class MyFrame extends JFrame implements MouseListener {
             ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
         }
         frame.add(mainPanel, BorderLayout.CENTER);
-        frame.setSize(700, 700);
+        frame.setSize(640, 640);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.pack();
     }
 
+    // Returns true if king of given color is under check
     static boolean isCheck(Piece[][] board, int kingX, int kingY, boolean color) {
-        // boolean color = board[kingX][kingY].color;
         int king = (kingX * 10) + kingY;
         for (int i = 0; i < 8; i++) {
             Vector<Integer> list = new Vector<Integer>();
             for (int j = 0; j < 8; j++) {
                 if (board[i][j] != null) {
                     if (color != board[i][j].color) {
-                        if (board[i][j].getClass().getSimpleName() == "King") {
+                        if (board[i][j].getClass().getSimpleName().equals("King")) {
                             continue;
                         }
                         list = board[i][j].possibleMoves(board, i, j);
@@ -273,16 +256,17 @@ public class MyFrame extends JFrame implements MouseListener {
         return false;
     }
 
+    // Returns a vector containing positions of pieces that are given king is under
+    // check from
     static Vector<Integer> checkList(Piece[][] board, int kingX, int kingY) {
         boolean color = board[kingX][kingY].color;
         int king = (kingX * 10) + kingY;
         Vector<Integer> list = new Vector<Integer>();
         for (int i = 0; i < 8; i++) {
-            for (int j = 0; i < 8; j++) {
+            for (int j = 0; j < 8; j++) {
                 if (board[i][j] != null) {
                     if (color != board[i][j].color) {
-                        Vector<Integer> list1 = new Vector<Integer>();
-                        list1 = board[i][j].possibleMoves(board, i, j);
+                        Vector<Integer> list1 = board[i][j].possibleMoves(board, i, j);
                         for (int k = 0; k < list1.size(); k++) {
                             if (list1.get(k) == king) {
                                 list.add((i * 10) + j);
@@ -296,19 +280,21 @@ public class MyFrame extends JFrame implements MouseListener {
         return list;
     }
 
+    // Returns true if there iis Chec kMate
     static boolean isCheckMate(Piece[][] board, int kingX, int kingY) {
         boolean color = board[kingX][kingY].color;
-        boolean flag = true;
-        Vector<Integer> list = new Vector<Integer>();
-        list = board[kingX][kingY].possibleMoves(board, kingX, kingY);
+        boolean flag = false;
+        Vector<Integer> list = board[kingX][kingY].possibleMoves(board, kingX, kingY);
         for (int i = 0; i < list.size(); i++) {
             Board temp = new Board();
             temp.board = board;
             temp.updateBoard(kingX, kingY, (list.get(i) / 10), (list.get(i) % 10));
             if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10,
-                    temp.board[(list.get(i) / 10)][list.get(0 % 10)].color)) {
+                    temp.board[(list.get(i) / 10)][(list.get(i) % 10)].color)) {
+                temp.updateBoard((list.get(i) / 10), (list.get(i) % 10), kingX, kingY);
                 return false;
             }
+            temp.updateBoard(list.get(i) / 10, list.get(i) % 10, kingX, kingY);
         }
         list = checkList(board, kingX, kingY);
         if (list.size() == 1) {
@@ -352,6 +338,7 @@ public class MyFrame extends JFrame implements MouseListener {
         return flag;
     }
 
+    // Returns true if game has reached Stale Mate
     static boolean isStaleMate(Piece[][] board, boolean color, int kingX, int kingY) {
         if (!isCheck(board, kingX, kingY, board[kingX][kingY].color)) {
             return false;
@@ -361,7 +348,7 @@ public class MyFrame extends JFrame implements MouseListener {
                 if (board[i][j] != null) {
                     if (board[i][j].color == color) {
                         Vector<Integer> list = board[i][j].possibleMoves(board, i, j);
-                        if (list.size() != 0) {
+                        if (!list.isEmpty()) {
                             return false;
                         }
                     }
@@ -373,16 +360,17 @@ public class MyFrame extends JFrame implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
+        // Not Needed
     }
 
+    // Automatically Called when mouse is clicked
     @Override
     public void mousePressed(MouseEvent e) {
         int x = e.getComponent().getX() / e.getComponent().getWidth();
         int y = 7 - e.getComponent().getY() / e.getComponent().getHeight();
         if (gameBoard.board[x][y] != null) {
-            if (gameBoard.board[x][y].color == Turn) {
-                    selectPiece(x, y);
+            if (gameBoard.board[x][y].color == turn) {
+                selectPiece(x, y);
             } else if (isSelected) {
                 movePiece(x, y);
             }
@@ -393,17 +381,17 @@ public class MyFrame extends JFrame implements MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        // Not Needed
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
+        // Not Needed
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-
+        // Not Needed
     }
 
 }
