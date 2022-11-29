@@ -156,9 +156,7 @@ public class MyFrame extends JFrame implements MouseListener {
         isSelected = false;
         int kingX = gameBoard.returnKingX(!turn);
         int kingY = gameBoard.returnKingY(!turn);
-        if (isCheckMate(gameBoard.board, kingX, kingY)) {
-            JOptionPane.showMessageDialog(frame, "Check Mate");
-        } else if (isCheck(gameBoard.board, kingX, kingY, !turn)) {
+        if (isCheck(gameBoard.board, kingX, kingY, !turn)) {
             JOptionPane.showMessageDialog(frame, "Check");
         }
         turn = !turn;
