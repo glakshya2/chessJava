@@ -5,4 +5,4 @@
 5. implement enpassant
 6. fix ischeckmate
 7. use is stalemate and implement 3 move repeat condition for staemate
-8. fix piece changing color on rare occassions
+8. fix piece changing color on rare occasions
