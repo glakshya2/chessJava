@@ -5,15 +5,204 @@ import java.util.Vector;
 
 public class MyFrame extends JFrame implements MouseListener {
 
+    // Returns true if king of given color is under check
+    static boolean isCheck(Piece[][] board, int kingX, int kingY, boolean color) {
+        int king = (kingX * 10) + kingY;
+        for (int i = 0; i < 8; i++) {
+            Vector<Integer> list = new Vector<Integer>();
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] != null) {
+                    if (color != board[i][j].color) {
+                        if (board[i][j].getClass().getSimpleName().equals("King")) {
+                            continue;
+                        }
+                        list = board[i][j].possibleMoves(board, i, j);
+                        for (int k = 0; k < list.size(); k++) {
+                            if (list.get(k) == king) {
+                                return true;
+                            }
+                        }
+                        list.clear();
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // Returns a vector containing positions of pieces that the given king is under
+    // check from
+    static Vector<Integer> checkList(Piece[][] board, int kingX, int kingY) {
+        boolean color = board[kingX][kingY].color;
+        int king = (kingX * 10) + kingY;
+        Vector<Integer> list = new Vector<Integer>();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] != null) {
+                    if (color != board[i][j].color) {
+                        Vector<Integer> list1 = board[i][j].possibleMoves(board, i, j);
+                        for (int k = 0; k < list1.size(); k++) {
+                            if (list1.get(k) == king) {
+                                list.add((i * 10) + j);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    // Returns true if there is Check kMate
+    static boolean isCheckMate(Piece[][] board, int kingX, int kingY) {
+        boolean color = board[kingX][kingY].color;
+        // boolean flag = false;
+        Vector<Integer> list = board[kingX][kingY].possibleMoves(board, kingX, kingY);
+        for (int i = 0; i < list.size(); i++) {
+            Board temp = new Board();
+            temp.board = board;
+            temp.updateBoard(kingX, kingY, (list.get(i) / 10), (list.get(i) % 10));
+            if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10,
+                    temp.board[(list.get(i) / 10)][(list.get(i) % 10)].color)) {
+                temp.updateBoard((list.get(i) / 10), (list.get(i) % 10), kingX, kingY);
+                return false;
+            }
+            temp.updateBoard(list.get(i) / 10, list.get(i) % 10, kingX, kingY);
+        }
+        list = checkList(board, kingX, kingY);
+        if (list.size() == 1) {
+            for (int i = 0; i < 8; i++) {
+                Vector<Integer> list1 = new Vector<Integer>();
+                for (int j = 0; j < 8; j++) {
+                    if (board[i][j] != null) {
+                        if (board[i][j].color == color) {
+                            list1 = board[i][j].possibleMoves(board, i, j);
+                            for (int k = 0; k < list1.size(); k++) {
+                                if (list1.get(k) == list.get(0)) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < 8; i++) {
+                Vector<Integer> list1 = new Vector<Integer>();
+                for (int j = 0; j < 8; j++) {
+                    if (board[i][j] != null) {
+                        if (board[i][j].color == color) {
+                            list1 = board[i][j].possibleMoves(board, i, j);
+                            for (int k = 0; k < list1.size(); k++) {
+                                Board temp = new Board();
+                                temp.board = board;
+                                temp.updateBoard(i, j, (list1.get(k) / 10), (list1.get(k) % 10));
+                                if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10,
+                                        temp.board[(list.get(i) / 10)][list.get(i) % 10].color)) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(!isCheck(board, kingX, kingY, color)){
+            return false;
+        }
+        return true;
+    }
+
+    // Returns true if game has reached Stale Mate
+    static boolean isStaleMate(Piece[][] board, boolean color, int kingX, int kingY) {
+        if (!isCheck(board, kingX, kingY, board[kingX][kingY].color)) {
+            return false;
+        }
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] != null) {
+                    if (board[i][j].color == color) {
+                        Vector<Integer> list = board[i][j].possibleMoves(board, i, j);
+                        if (!list.isEmpty()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     Board gameBoard = new Board();
     JPanel mainPanel;
     JPanel panel;
     JFrame frame;
     boolean turn = true; // True for white, false for black
+
     Vector<Integer> highlighted = new Vector<Integer>();
+
     boolean isSelected = false;
+
     int selectedX;
+
     int selectedY;
+
+    // Creates GUI and sets up board
+    public MyFrame() {
+
+        gameBoard.set();
+
+        frame = new JFrame("Chess");
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new GridLayout(8, 8));
+        int n = 0;
+        int a = 1;
+        int b = 0;
+
+        for (int i = 0; i < 64; i++) {
+            panel = new JPanel();
+            LayoutManager overlay = new OverlayLayout(panel);
+            panel.setLayout(overlay);
+            panel.add(new JLabel(new ImageIcon()));
+            panel.setAlignmentX(0.5f);
+            panel.setAlignmentY(0.5f);
+
+            panel.addMouseListener(this);
+            if (i % 2 == a) {
+                panel.setBackground(new Color(46, 138, 87));
+            }
+            if (i % 2 == b) {
+                panel.setBackground(new Color(255, 255, 255));
+            }
+            if (i % 8 == 7) {
+                int temp = a;
+                a = b;
+                b = temp;
+            }
+            mainPanel.add(panel, n);
+            n++;
+        }
+
+        for (int i = 0; i < 16; i++) {
+            ((JPanel) mainPanel.getComponent(i)).remove(0);
+            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
+            boolean color = gameBoard.board[getX(i)][getY(i)].color;
+            ImageIcon img = returnImg(s, color);
+            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
+        }
+        for (int i = 48; i < 64; i++) {
+            ((JPanel) mainPanel.getComponent(i)).remove(0);
+            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
+            boolean color = gameBoard.board[getX(i)][getY(i)].color;
+            ImageIcon img = returnImg(s, color);
+            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
+        }
+        frame.add(mainPanel, BorderLayout.CENTER);
+        frame.setSize(640, 640);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        frame.pack();
+    }
 
     // Returns an ImageIcon for given piece
     public ImageIcon returnImg(String s, boolean color) {
@@ -61,7 +250,7 @@ public class MyFrame extends JFrame implements MouseListener {
         return 7 - (compNo / 8);
     }
 
-    // Removes all yellow dots used for highlighting possible movesfrom GUI
+    // Removes all yellow dots used for highlighting possible moves from GUI
     public void clearHighlight() {
         for (int i = 0; i < highlighted.size(); i++) {
             if (gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))] != null) {
@@ -159,6 +348,9 @@ public class MyFrame extends JFrame implements MouseListener {
         if (isCheck(gameBoard.board, kingX, kingY, !turn)) {
             JOptionPane.showMessageDialog(frame, "Check");
         }
+        if (isCheckMate(gameBoard.board, kingX, kingY)) {
+            JOptionPane.showMessageDialog(frame, "CheckMate");
+        }
         turn = !turn;
     }
 
@@ -170,190 +362,6 @@ public class MyFrame extends JFrame implements MouseListener {
                 break;
             }
         }
-    }
-
-    // Creates GUI and sets up board
-    public MyFrame() {
-
-        gameBoard.set();
-
-        frame = new JFrame("Chess");
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(8, 8));
-        int n = 0;
-        int a = 1;
-        int b = 0;
-
-        for (int i = 0; i < 64; i++) {
-            panel = new JPanel();
-            LayoutManager overlay = new OverlayLayout(panel);
-            panel.setLayout(overlay);
-            panel.add(new JLabel(new ImageIcon()));
-            panel.setAlignmentX(0.5f);
-            panel.setAlignmentY(0.5f);
-
-            panel.addMouseListener(this);
-            if (i % 2 == a) {
-                panel.setBackground(new Color(46, 138, 87));
-            }
-            if (i % 2 == b) {
-                panel.setBackground(new Color(255, 255, 255));
-            }
-            if (i % 8 == 7) {
-                int temp = a;
-                a = b;
-                b = temp;
-            }
-            mainPanel.add(panel, n);
-            n++;
-        }
-
-        for (int i = 0; i < 16; i++) {
-            ((JPanel) mainPanel.getComponent(i)).remove(0);
-            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
-            boolean color = gameBoard.board[getX(i)][getY(i)].color;
-            ImageIcon img = returnImg(s, color);
-            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
-        }
-        for (int i = 48; i < 64; i++) {
-            ((JPanel) mainPanel.getComponent(i)).remove(0);
-            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
-            boolean color = gameBoard.board[getX(i)][getY(i)].color;
-            ImageIcon img = returnImg(s, color);
-            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
-        }
-        frame.add(mainPanel, BorderLayout.CENTER);
-        frame.setSize(640, 640);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        frame.pack();
-    }
-
-    // Returns true if king of given color is under check
-    static boolean isCheck(Piece[][] board, int kingX, int kingY, boolean color) {
-        int king = (kingX * 10) + kingY;
-        for (int i = 0; i < 8; i++) {
-            Vector<Integer> list = new Vector<Integer>();
-            for (int j = 0; j < 8; j++) {
-                if (board[i][j] != null) {
-                    if (color != board[i][j].color) {
-                        if (board[i][j].getClass().getSimpleName().equals("King")) {
-                            continue;
-                        }
-                        list = board[i][j].possibleMoves(board, i, j);
-                        for (int k = 0; k < list.size(); k++) {
-                            if (list.get(k) == king) {
-                                return true;
-                            }
-                        }
-                        list.clear();
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    // Returns a vector containing positions of pieces that are given king is under
-    // check from
-    static Vector<Integer> checkList(Piece[][] board, int kingX, int kingY) {
-        boolean color = board[kingX][kingY].color;
-        int king = (kingX * 10) + kingY;
-        Vector<Integer> list = new Vector<Integer>();
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (board[i][j] != null) {
-                    if (color != board[i][j].color) {
-                        Vector<Integer> list1 = board[i][j].possibleMoves(board, i, j);
-                        for (int k = 0; k < list1.size(); k++) {
-                            if (list1.get(k) == king) {
-                                list.add((i * 10) + j);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return list;
-    }
-
-    // Returns true if there iis Chec kMate
-    static boolean isCheckMate(Piece[][] board, int kingX, int kingY) {
-        boolean color = board[kingX][kingY].color;
-        boolean flag = false;
-        Vector<Integer> list = board[kingX][kingY].possibleMoves(board, kingX, kingY);
-        for (int i = 0; i < list.size(); i++) {
-            Board temp = new Board();
-            temp.board = board;
-            temp.updateBoard(kingX, kingY, (list.get(i) / 10), (list.get(i) % 10));
-            if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10,
-                    temp.board[(list.get(i) / 10)][(list.get(i) % 10)].color)) {
-                temp.updateBoard((list.get(i) / 10), (list.get(i) % 10), kingX, kingY);
-                return false;
-            }
-            temp.updateBoard(list.get(i) / 10, list.get(i) % 10, kingX, kingY);
-        }
-        list = checkList(board, kingX, kingY);
-        if (list.size() == 1) {
-            for (int i = 0; i < 8; i++) {
-                Vector<Integer> list1 = new Vector<Integer>();
-                for (int j = 0; j < 8; j++) {
-                    if (board[i][j] != null) {
-                        if (board[i][j].color == color) {
-                            list1 = board[i][j].possibleMoves(board, i, j);
-                            for (int k = 0; k < list.size(); k++) {
-                                for (int l = 0; l < list1.size(); l++) {
-                                    if (list.get(k) == list1.get(l)) {
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < 8; i++) {
-                Vector<Integer> list1 = new Vector<Integer>();
-                for (int j = 0; j < 8; j++) {
-                    if (board[i][j] != null) {
-                        if (board[i][j].color == color) {
-                            list1 = board[i][j].possibleMoves(board, i, j);
-                            for (int k = 0; k < list1.size(); k++) {
-                                Board temp = new Board();
-                                temp.board = board;
-                                temp.updateBoard(i, j, (list1.get(k) / 10), (list1.get(k) % 10));
-                                if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10,
-                                        temp.board[(list.get(i) / 10)][list.get(0 % 10)].color)) {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return flag;
-    }
-
-    // Returns true if game has reached Stale Mate
-    static boolean isStaleMate(Piece[][] board, boolean color, int kingX, int kingY) {
-        if (!isCheck(board, kingX, kingY, board[kingX][kingY].color)) {
-            return false;
-        }
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (board[i][j] != null) {
-                    if (board[i][j].color == color) {
-                        Vector<Integer> list = board[i][j].possibleMoves(board, i, j);
-                        if (!list.isEmpty()) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     @Override
