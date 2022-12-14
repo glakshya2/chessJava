@@ -1,6 +1,7 @@
 import java.util.Vector;
 
 public class Pawn extends Piece {
+    
     public boolean isFirstMove = true;
 
     Pawn(boolean color) {

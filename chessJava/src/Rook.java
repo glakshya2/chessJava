@@ -1,6 +1,7 @@
 import java.util.Vector;
 
 public class Rook extends Piece {
+    
     Rook(boolean color) {
         super(color);
     }

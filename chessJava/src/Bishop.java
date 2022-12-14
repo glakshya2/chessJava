@@ -1,6 +1,7 @@
 import java.util.Vector;
 
 public class Bishop extends Piece {
+    
     Bishop(boolean color) {
         super(color);
     }
