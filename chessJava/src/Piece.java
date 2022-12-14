@@ -3,7 +3,8 @@ import java.util.Vector;
 public abstract class Piece {
 
     public boolean color; // true for white, false for black
-
+    public boolean isFirstMove;
+    
     Piece(boolean color) {
         this.color = color;
     }
@@ -24,5 +25,21 @@ public abstract class Piece {
     public void updateFirstMove() {
         // Only used in Pawn.java to change boolean value of isFirstMove to false on
         // moving pawn piece for first time.
+    }
+
+    public boolean isColor() {
+        return color;
+    }
+
+    public void setColor(boolean color) {
+        this.color = color;
+    }
+
+    public boolean isFirstMove(){
+        return isFirstMove;
+    }
+
+    public void setFirstMove(boolean isFirstMove) {
+        this.isFirstMove = isFirstMove;
     }
 }

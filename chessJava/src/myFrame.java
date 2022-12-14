@@ -7,16 +7,18 @@ public class MyFrame extends JFrame implements MouseListener {
 
     // Returns true if king of given color is under check
     static boolean isCheck(Piece[][] board, int kingX, int kingY, boolean color) {
+        Board tempBoard = new Board();
+        tempBoard.createCopy(gameBoard);
         int king = (kingX * 10) + kingY;
         for (int i = 0; i < 8; i++) {
             Vector<Integer> list = new Vector<Integer>();
             for (int j = 0; j < 8; j++) {
-                if (board[i][j] != null) {
-                    if (color != board[i][j].color) {
-                        if (board[i][j].getClass().getSimpleName().equals("King")) {
+                if (tempBoard.board[i][j] != null) {
+                    if (color != tempBoard.board[i][j].color) {
+                        if (tempBoard.board[i][j].getClass().getSimpleName().equals("King")) {
                             continue;
                         }
-                        list = board[i][j].possibleMoves(board, i, j);
+                        list = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
                         for (int k = 0; k < list.size(); k++) {
                             if (list.get(k) == king) {
                                 return true;
@@ -33,14 +35,16 @@ public class MyFrame extends JFrame implements MouseListener {
     // Returns a vector containing positions of pieces that the given king is under
     // check from
     static Vector<Integer> checkList(Piece[][] board, int kingX, int kingY) {
-        boolean color = board[kingX][kingY].color;
+        Board tempBoard = new Board();
+        tempBoard.createCopy(gameBoard);
+        boolean color = tempBoard.board[kingX][kingY].color;
         int king = (kingX * 10) + kingY;
         Vector<Integer> list = new Vector<Integer>();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (board[i][j] != null) {
-                    if (color != board[i][j].color) {
-                        Vector<Integer> list1 = board[i][j].possibleMoves(board, i, j);
+                if (tempBoard.board[i][j] != null) {
+                    if (color != tempBoard.board[i][j].color) {
+                        Vector<Integer> list1 = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
                         for (int k = 0; k < list1.size(); k++) {
                             if (list1.get(k) == king) {
                                 list.add((i * 10) + j);
@@ -56,59 +60,58 @@ public class MyFrame extends JFrame implements MouseListener {
 
     // Returns true if there is Check kMate
     static boolean isCheckMate(Piece[][] board, int kingX, int kingY) {
-        boolean color = board[kingX][kingY].color;
-        // boolean flag = false;
-        Vector<Integer> list = board[kingX][kingY].possibleMoves(board, kingX, kingY);
-        for (int i = 0; i < list.size(); i++) {
-            Board temp = new Board();
-            temp.board = board;
-            temp.updateBoard(kingX, kingY, (list.get(i) / 10), (list.get(i) % 10));
-            if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10,
-                    temp.board[(list.get(i) / 10)][(list.get(i) % 10)].color)) {
-                temp.updateBoard((list.get(i) / 10), (list.get(i) % 10), kingX, kingY);
-                return false;
-            }
-            temp.updateBoard(list.get(i) / 10, list.get(i) % 10, kingX, kingY);
-        }
-        list = checkList(board, kingX, kingY);
-        if (list.size() == 1) {
-            for (int i = 0; i < 8; i++) {
-                Vector<Integer> list1 = new Vector<Integer>();
-                for (int j = 0; j < 8; j++) {
-                    if (board[i][j] != null) {
-                        if (board[i][j].color == color) {
-                            list1 = board[i][j].possibleMoves(board, i, j);
-                            for (int k = 0; k < list1.size(); k++) {
-                                if (list1.get(k) == list.get(0)) {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < 8; i++) {
-                Vector<Integer> list1 = new Vector<Integer>();
-                for (int j = 0; j < 8; j++) {
-                    if (board[i][j] != null) {
-                        if (board[i][j].color == color) {
-                            list1 = board[i][j].possibleMoves(board, i, j);
-                            for (int k = 0; k < list1.size(); k++) {
-                                Board temp = new Board();
-                                temp.board = board;
-                                temp.updateBoard(i, j, (list1.get(k) / 10), (list1.get(k) % 10));
-                                if (!isCheck(temp.board, list.get(i) / 10, list.get(i) % 10,
-                                        temp.board[(list.get(i) / 10)][list.get(i) % 10].color)) {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if(!isCheck(board, kingX, kingY, color)){
+        Board tempBoard = new Board();
+        tempBoard.createCopy(gameBoard);
+        boolean color = tempBoard.board[kingX][kingY].color;
+        if (!isCheck(tempBoard.board, kingX, kingY, color)) {
             return false;
+        }
+        Vector<Integer> list = tempBoard.board[kingX][kingY].possibleMoves(tempBoard.board, kingX, kingY);
+        if (list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                if (!isCheck(tempBoard.board, kingX, kingY, color)) {
+                    return false;
+                }
+                tempBoard.updateBoard(kingX, kingY, list.get(i) / 10, list.get(i) % 10);
+                if (!isCheck(tempBoard.board, list.get(i) / 10, list.get(i) % 10, color)) {
+                    tempBoard.createCopy(gameBoard);
+                    return false;
+                }
+                tempBoard.createCopy(gameBoard);
+            }
+        }
+        Vector<Integer> checkList = checkList(board, kingX, kingY);
+        if (checkList.size() == 1) {
+            int check = checkList.get(0);
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (tempBoard.board[i][j] != null) {
+                        if (tempBoard.board[i][j].color == color) {
+                            Vector<Integer> possible = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
+                            if (possible.contains(check)) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (tempBoard.board[i][j] != null) {
+                        if (tempBoard.board[i][j].color == color) {
+                            Vector<Integer> possible = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
+                            for (int k = 0; k < possible.size(); k++) {
+                                tempBoard.updateBoard(i, j, possible.get(k) / 10, possible.get(k) % 10);
+                                if (!isCheck(tempBoard.board, kingX, kingY, color)) {
+                                    tempBoard.createCopy(gameBoard);
+                                    return false;
+                                }
+                                tempBoard.createCopy(gameBoard);
+                            }
+                        }
+                    }
+                }
+            }
         }
         return true;
     }
@@ -133,7 +136,7 @@ public class MyFrame extends JFrame implements MouseListener {
         return true;
     }
 
-    Board gameBoard = new Board();
+    static Board gameBoard = new Board();
     JPanel mainPanel;
     JPanel panel;
     JFrame frame;
@@ -207,29 +210,29 @@ public class MyFrame extends JFrame implements MouseListener {
     // Returns an ImageIcon for given piece
     public ImageIcon returnImg(String s, boolean color) {
         if (s.equals("Bishop") && color) {
-            return new ImageIcon("BishopW.png");
+            return new ImageIcon("images/BishopW.png");
         } else if (s.equals("Bishop") && !color) {
-            return new ImageIcon("BishopB.png");
+            return new ImageIcon("images/BishopB.png");
         } else if (s.equals("King") && color) {
-            return new ImageIcon("KingW.png");
+            return new ImageIcon("images/KingW.png");
         } else if (s.equals("King") && !color) {
-            return new ImageIcon("KingB.png");
+            return new ImageIcon("images/KingB.png");
         } else if (s.equals("Knight") && color) {
-            return new ImageIcon("HorseW.png");
+            return new ImageIcon("images/HorseW.png");
         } else if (s.equals("Knight") && !color) {
-            return new ImageIcon("HorseB.png");
+            return new ImageIcon("images/HorseB.png");
         } else if (s.equals("Pawn") && color) {
-            return new ImageIcon("PawnW.png");
+            return new ImageIcon("images/PawnW.png");
         } else if (s.equals("Pawn") && !color) {
-            return new ImageIcon("PawnB.png");
+            return new ImageIcon("images/PawnB.png");
         } else if (s.equals("Rook") && color) {
-            return new ImageIcon("RookW.png");
+            return new ImageIcon("images/RookW.png");
         } else if (s.equals("Rook") && !color) {
-            return new ImageIcon("RookB.png");
+            return new ImageIcon("images/RookB.png");
         } else if (s.equals("Queen") && color) {
-            return new ImageIcon("QueenW.png");
+            return new ImageIcon("images/QueenW.png");
         } else if (s.equals("Queen") && !color) {
-            return new ImageIcon("QueenB.png");
+            return new ImageIcon("images/QueenB.png");
         } else {
             return null;
         }
@@ -295,14 +298,12 @@ public class MyFrame extends JFrame implements MouseListener {
                 boolean color = gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))].color;
                 ImageIcon img = returnImg(s, color);
                 ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).removeAll();
-                ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon("YellowDot.png")));
+                ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon("images/YellowDot.png")));
                 ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).add(new JLabel(img));
             } else {
-                ((JPanel) mainPanel.getComponent(compNo)).remove(0);
-                ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon("YellowDot.png")));
+                ((JPanel) mainPanel.getComponent(compNo)).removeAll();
+                ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon("images/YellowDot.png")));
             }
-            ((JPanel) mainPanel.getComponent(compNo)).remove(0);
-            ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon("YellowDot.png")));
         }
         mainPanel.validate();
         mainPanel.repaint();

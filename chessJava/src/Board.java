@@ -1,6 +1,14 @@
 public class Board {
     public Piece[][] board = new Piece[8][8];
 
+    public void setBoard(Piece[][] p) {
+        this.board = p;
+    }
+
+    public Piece[][] getBoard() {
+        return board;
+    }
+
     // Set positions of pieces to their initial positions
     void set() {
         board[0][0] = new Rook(true);
@@ -32,7 +40,7 @@ public class Board {
         }
     }
 
-    // update board when move is perfomed
+    // update board when move is performed
     public void updateBoard(int startX, int startY, int endX, int endY) {
         board[endX][endY] = board[startX][startY];
         board[startX][startY] = null;
@@ -79,5 +87,37 @@ public class Board {
             }
         }
         return -1;
+    }
+
+    public Piece returnPiece(String name, boolean color) {
+        if (name.equals("Pawn")) {
+            return new Pawn(color);
+        } else if (name.equals("Bishop")) {
+            return new Bishop(color);
+        } else if (name.equals("King")) {
+            return new King(color);
+        } else if (name.equals("Knight")) {
+            return new Knight(color);
+        } else if (name.equals("Queen")) {
+            return new Queen(color);
+        } else {
+            return new Rook(color);
+        }
+    }
+
+    public void createCopy(Board x) {
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (x.board[i][j] != null) {
+                    board[i][j] = returnPiece(x.board[i][j].getClass().getSimpleName(), x.board[i][j].isColor());
+                    if (board[i][j].getClass().getSimpleName() == "Pawn") {
+                        board[i][j].setFirstMove(x.board[i][j].isFirstMove());
+                    }
+                } else {
+                    board[i][j] = null;
+                }
+            }
+        }
     }
 }
