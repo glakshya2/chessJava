@@ -1,7 +1,7 @@
 import java.util.Vector;
 
 public class Rook extends Piece {
-    
+
     Rook(boolean color) {
         super(color);
     }
@@ -25,7 +25,7 @@ public class Rook extends Piece {
             } else {
                 for (int i = startY - 1; i >= endY; i--) {
                     if (board[startX][i] != null) {
-                        if (board[startX][i].color = color) {
+                        if (board[startX][i].color == color) {
                             return false;
                         }
                     }
@@ -35,7 +35,7 @@ public class Rook extends Piece {
             if (startX < endX) {
                 for (int i = startX + 1; i <= endX; i++) {
                     if (board[i][startY] != null) {
-                        if (board[i][startY].color = color) {
+                        if (board[i][startY].color == color) {
                             return false;
                         }
                     }
@@ -43,7 +43,7 @@ public class Rook extends Piece {
             } else {
                 for (int i = startX - 1; i >= endX; i--) {
                     if (board[i][startY] != null) {
-                        if (board[i][startY].color = color) {
+                        if (board[i][startY].color == color) {
                             return false;
                         }
                     }

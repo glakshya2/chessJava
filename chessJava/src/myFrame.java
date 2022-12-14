@@ -11,7 +11,7 @@ public class MyFrame extends JFrame implements MouseListener {
         tempBoard.createCopy(gameBoard);
         int king = (kingX * 10) + kingY;
         for (int i = 0; i < 8; i++) {
-            Vector<Integer> list = new Vector<Integer>();
+            Vector<Integer> list;
             for (int j = 0; j < 8; j++) {
                 if (tempBoard.board[i][j] != null) {
                     if (color != tempBoard.board[i][j].color) {
@@ -276,7 +276,7 @@ public class MyFrame extends JFrame implements MouseListener {
     // Highlights possible moves of selected piece in GUI
     public void highlightPossible(int x, int y) {
         clearHighlight();
-        Vector<Integer> list = new Vector<Integer>();
+        Vector<Integer> list;
         if (turn) {
             list = gameBoard.board[x][y].possibleMoves(gameBoard.board, x, y);
         } else {
@@ -327,17 +327,12 @@ public class MyFrame extends JFrame implements MouseListener {
         String s = gameBoard.board[selectedX][selectedY].getClass().getSimpleName();
         boolean color = gameBoard.board[selectedX][selectedY].color;
         ImageIcon img = returnImg(s, color);
-        if (gameBoard.board[x][y] != null) {
+        
             ((JPanel) mainPanel.getComponent(newCompNo)).removeAll();
             ((JPanel) mainPanel.getComponent(newCompNo)).add(new JLabel(img));
             ((JPanel) mainPanel.getComponent(compNo)).removeAll();
             ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon()));
-        } else {
-            ((JPanel) mainPanel.getComponent(newCompNo)).removeAll();
-            ((JPanel) mainPanel.getComponent(newCompNo)).add(new JLabel(img));
-            ((JPanel) mainPanel.getComponent(compNo)).removeAll();
-            ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon()));
-        }
+        
         gameBoard.updateBoard(selectedX, selectedY, x, y);
         if (gameBoard.board[x][y].getClass().getSimpleName().equals("Pawn")) {
             gameBoard.board[x][y].updateFirstMove();

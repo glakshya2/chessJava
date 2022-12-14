@@ -1,11 +1,12 @@
 import java.util.Vector;
 
 public class Bishop extends Piece {
-    
+
     Bishop(boolean color) {
         super(color);
     }
 
+    @Override
     boolean isValidMove(Piece[][] board, int startX, int startY, int endX, int endY) {
         if (board[endX][endY] != null) {
             if (this.color == board[endX][endY].color) {
