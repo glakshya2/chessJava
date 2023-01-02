@@ -5,6 +5,8 @@ import java.util.Vector;
 
 public class MyFrame extends JFrame implements MouseListener {
 
+    static Board gameBoard = new Board();
+
     // Returns true if king of given color is under check
     static boolean isCheck(Piece[][] board, int kingX, int kingY, boolean color) {
         int king = (kingX * 10) + kingY;
@@ -111,60 +113,6 @@ public class MyFrame extends JFrame implements MouseListener {
             return false;
         }
         return true;
-        /*
-         * Vector<Integer> checkList = checkList(board, kingX, kingY);
-         * if (checkList.size() == 1) {
-         * boolean evadable = true;
-         * for (int i = 0; i < 8; i++) {
-         * for (int j = 0; j < 8; j++) {
-         * if (tempBoard.board[i][j] != null) {
-         * if (tempBoard.board[i][j].color == color) {
-         * Vector<Integer> possible =
-         * tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
-         * for (int k = 0; k < possible.size(); k++) {
-         * tempBoard.updateBoard(i, j, possible.get(k) / 10, possible.get(k) % 10);
-         * for (int l = 0; l < 8; l++) {
-         * for (int m = 0; m < 8; m++) {
-         * if (tempBoard.board[l][m] != null) {
-         * if (tempBoard.board[l][m].color != tempBoard.board[kingX][kingY].color) {
-         * Vector<Integer> possible2 =
-         * tempBoard.board[l][m].possibleMoves(tempBoard.board, l, m);
-         * if(possible2.contains((kingX*10)+kingY)){
-         * evadable = false;
-         * }
-         * }
-         * }
-         * }
-         * }
-         * }
-         * }
-         * }
-         * }
-         * }
-         * if(!evadable){
-         * return true;
-         * }
-         * for (int i = 0; i < 8; i++) {
-         * for (int j = 0; j < 8; j++) {
-         * if (tempBoard.board[i][j] != null) {
-         * if (tempBoard.board[i][j].color == color) {
-         * Vector<Integer> possible =
-         * tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
-         * for (int k = 0; k < possible.size(); k++) {
-         * tempBoard.updateBoard(i, j, possible.get(k) / 10, possible.get(k) % 10);
-         * if (!isCheck(tempBoard.board, kingX, kingY, color)) {
-         * tempBoard.createCopy(gameBoard);
-         * return false;
-         * }
-         * tempBoard.createCopy(gameBoard);
-         * }
-         * }
-         * }
-         * }
-         * }
-         * }
-         * return true;
-         */
     }
 
     // Returns true if game has reached Stale Mate
@@ -187,7 +135,6 @@ public class MyFrame extends JFrame implements MouseListener {
         return true;
     }
 
-    static Board gameBoard = new Board();
     JPanel mainPanel;
     JPanel panel;
     JFrame frame;
@@ -333,14 +280,34 @@ public class MyFrame extends JFrame implements MouseListener {
         } else {
             list = gameBoard.board[x][y].possibleMoves(gameBoard.flipBoard(), 7 - x, 7 - y);
         }
-        for (int i = 0; i < list.size(); i++) {
-            int listX = list.elementAt(i) / 10;
-            int listY = list.elementAt(i) % 10;
-            if (!turn) {
+        if (!turn) {
+            for (int i = 0; i < list.size(); i++) {
+                int listX = list.elementAt(i) / 10;
+                int listY = list.elementAt(i) % 10;
                 listX = 7 - listX;
                 listY = 7 - listY;
+                list.set(i, (listX * 10) + listY);
             }
+        }
+        if (gameBoard.board[selectedX][selectedY].getClass().getSimpleName().equals("Pawn")) {
+            int position = -1;
+            boolean found = false;
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i) / 10 == gameBoard.returnKingX(!turn)
+                        && list.get(i) % 10 == gameBoard.returnKingY(!turn)) {
+                    position = i;
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                list.remove(position);
+            }
+        }
+        for (int i = 0; i < list.size(); i++) {
             int compNo;
+            int listX = list.elementAt(i) / 10;
+            int listY = list.elementAt(i) % 10;
             compNo = getCompNo(listX, listY);
             highlighted.add(compNo);
             if (gameBoard.board[listX][listY] != null) {
