@@ -83,17 +83,18 @@ public class MyFrame extends JFrame implements MouseListener {
                     if (tempBoard.board[i][j].color == tempBoard.board[kingX][kingY].color) {
                         Vector<Integer> possible = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
                         for (int k = 0; k < possible.size(); k++) {
-                            if(i == kingX && j == kingY){
-                                newKingX = possible.get(k)/10;
-                                newKingY = possible.get(k)%10;
+                            if (i == kingX && j == kingY) {
+                                newKingX = possible.get(k) / 10;
+                                newKingY = possible.get(k) % 10;
                             }
                             tempBoard.updateBoard(i, j, possible.get(k) / 10, possible.get(k) % 10);
                             for (int l = 0; l < 8; l++) {
                                 for (int m = 0; m < 8; m++) {
-                                    if(tempBoard.board[l][m]!=null){
-                                        if(tempBoard.board[l][m].color!=color){
-                                            Vector<Integer> possible2 = tempBoard.board[l][m].possibleMoves(tempBoard.board, l, m);
-                                            if(possible2.contains((newKingX*10)+newKingY)){
+                                    if (tempBoard.board[l][m] != null) {
+                                        if (tempBoard.board[l][m].color != color) {
+                                            Vector<Integer> possible2 = tempBoard.board[l][m]
+                                                    .possibleMoves(tempBoard.board, l, m);
+                                            if (possible2.contains((newKingX * 10) + newKingY)) {
                                                 evadable = false;
                                             }
                                         }
@@ -106,7 +107,7 @@ public class MyFrame extends JFrame implements MouseListener {
                 }
             }
         }
-        if(evadable){
+        if (evadable) {
             return false;
         }
         return true;
@@ -369,6 +370,26 @@ public class MyFrame extends JFrame implements MouseListener {
         }
     }
 
+    public void resetGUI() {
+        for (int i = 0; i < 64; i++) {
+            ((JPanel) mainPanel.getComponent(i)).removeAll();
+        }
+        for (int i = 0; i < 16; i++) {
+            ((JPanel) mainPanel.getComponent(i)).removeAll();
+            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
+            boolean color = gameBoard.board[getX(i)][getY(i)].color;
+            ImageIcon img = returnImg(s, color);
+            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
+        }
+        for (int i = 48; i < 64; i++) {
+            ((JPanel) mainPanel.getComponent(i)).removeAll();
+            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
+            boolean color = gameBoard.board[getX(i)][getY(i)].color;
+            ImageIcon img = returnImg(s, color);
+            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
+        }
+    }
+
     // Updates game state after making move
     public void updateGame(int x, int y) {
         clearHighlight();
@@ -387,17 +408,32 @@ public class MyFrame extends JFrame implements MouseListener {
         if (gameBoard.board[x][y].getClass().getSimpleName().equals("Pawn")) {
             gameBoard.board[x][y].updateFirstMove();
         }
-        mainPanel.validate();
         isSelected = false;
         int kingX = gameBoard.returnKingX(!turn);
         int kingY = gameBoard.returnKingY(!turn);
         if (isCheck(gameBoard.board, kingX, kingY, !turn)) {
             JOptionPane.showMessageDialog(frame, "Check");
         }
-        if (isCheckMate(gameBoard.board, kingX, kingY)) {
-            JOptionPane.showMessageDialog(frame, "CheckMate");
-        }
         turn = !turn;
+        if (isCheckMate(gameBoard.board, kingX, kingY)) {
+            if (!turn) {
+                JOptionPane.showMessageDialog(frame, "CheckMate!, White wins");
+                gameBoard.set();
+                resetGUI();
+                mainPanel.validate();
+                mainPanel.repaint();
+                turn = true;
+            } else {
+                JOptionPane.showMessageDialog(frame, "Checkmate!, Black Wins");
+                gameBoard.set();
+                resetGUI();
+                mainPanel.validate();
+                mainPanel.repaint();
+                turn = true;
+            }
+        }
+        mainPanel.validate();
+        mainPanel.repaint();
     }
 
     // Moves selected piece to selected position
