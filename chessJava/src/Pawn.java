@@ -51,7 +51,7 @@ public class Pawn extends Piece {
                 }
             }
         }
-        if (startY + 1 < 8 && startX - 1 > 0) {
+        if (startY + 1 < 8 && startX - 1 >= 0) {
             if (board[startX - 1][startY + 1] != null) {
                 if (isValidMove(board, startX, startY, startX - 1, startY + 1)) {
                     list.add(((startX - 1) * 10) + (startY + 1));

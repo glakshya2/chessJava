@@ -7,22 +7,18 @@ public class MyFrame extends JFrame implements MouseListener {
 
     // Returns true if king of given color is under check
     static boolean isCheck(Piece[][] board, int kingX, int kingY, boolean color) {
-        Board tempBoard = new Board();
-        tempBoard.createCopy(gameBoard);
         int king = (kingX * 10) + kingY;
         for (int i = 0; i < 8; i++) {
             Vector<Integer> list;
             for (int j = 0; j < 8; j++) {
-                if (tempBoard.board[i][j] != null) {
-                    if (color != tempBoard.board[i][j].color) {
-                        if (tempBoard.board[i][j].getClass().getSimpleName().equals("King")) {
+                if (board[i][j] != null) {
+                    if (color != board[i][j].color) {
+                        if (board[i][j].getClass().getSimpleName().equals("King")) {
                             continue;
                         }
-                        list = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
-                        for (int k = 0; k < list.size(); k++) {
-                            if (list.get(k) == king) {
-                                return true;
-                            }
+                        list = board[i][j].possibleMoves(board, i, j);
+                        if (list.contains(king)) {
+                            return true;
                         }
                         list.clear();
                     }
@@ -63,15 +59,14 @@ public class MyFrame extends JFrame implements MouseListener {
         Board tempBoard = new Board();
         tempBoard.createCopy(gameBoard);
         boolean color = tempBoard.board[kingX][kingY].color;
+        int newKingX = kingX;
+        int newKingY = kingY;
         if (!isCheck(tempBoard.board, kingX, kingY, color)) {
             return false;
         }
         Vector<Integer> list = tempBoard.board[kingX][kingY].possibleMoves(tempBoard.board, kingX, kingY);
         if (list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
-                if (!isCheck(tempBoard.board, kingX, kingY, color)) {
-                    return false;
-                }
                 tempBoard.updateBoard(kingX, kingY, list.get(i) / 10, list.get(i) % 10);
                 if (!isCheck(tempBoard.board, list.get(i) / 10, list.get(i) % 10, color)) {
                     tempBoard.createCopy(gameBoard);
@@ -80,40 +75,95 @@ public class MyFrame extends JFrame implements MouseListener {
                 tempBoard.createCopy(gameBoard);
             }
         }
-        Vector<Integer> checkList = checkList(board, kingX, kingY);
-        if (checkList.size() == 1) {
-            int check = checkList.get(0);
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    if (tempBoard.board[i][j] != null) {
-                        if (tempBoard.board[i][j].color == color) {
-                            Vector<Integer> possible = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
-                            if (possible.contains(check)) {
-                                return false;
+        tempBoard.createCopy(gameBoard);
+        boolean evadable = true;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (tempBoard.board[i][j] != null) {
+                    if (tempBoard.board[i][j].color == tempBoard.board[kingX][kingY].color) {
+                        Vector<Integer> possible = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
+                        for (int k = 0; k < possible.size(); k++) {
+                            if(i == kingX && j == kingY){
+                                newKingX = possible.get(k)/10;
+                                newKingY = possible.get(k)%10;
                             }
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    if (tempBoard.board[i][j] != null) {
-                        if (tempBoard.board[i][j].color == color) {
-                            Vector<Integer> possible = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
-                            for (int k = 0; k < possible.size(); k++) {
-                                tempBoard.updateBoard(i, j, possible.get(k) / 10, possible.get(k) % 10);
-                                if (!isCheck(tempBoard.board, kingX, kingY, color)) {
-                                    tempBoard.createCopy(gameBoard);
-                                    return false;
+                            tempBoard.updateBoard(i, j, possible.get(k) / 10, possible.get(k) % 10);
+                            for (int l = 0; l < 8; l++) {
+                                for (int m = 0; m < 8; m++) {
+                                    if(tempBoard.board[l][m]!=null){
+                                        if(tempBoard.board[l][m].color!=color){
+                                            Vector<Integer> possible2 = tempBoard.board[l][m].possibleMoves(tempBoard.board, l, m);
+                                            if(possible2.contains((newKingX*10)+newKingY)){
+                                                evadable = false;
+                                            }
+                                        }
+                                    }
                                 }
-                                tempBoard.createCopy(gameBoard);
                             }
+                            tempBoard.createCopy(gameBoard);
                         }
                     }
                 }
             }
         }
+        if(evadable){
+            return false;
+        }
         return true;
+        /*
+         * Vector<Integer> checkList = checkList(board, kingX, kingY);
+         * if (checkList.size() == 1) {
+         * boolean evadable = true;
+         * for (int i = 0; i < 8; i++) {
+         * for (int j = 0; j < 8; j++) {
+         * if (tempBoard.board[i][j] != null) {
+         * if (tempBoard.board[i][j].color == color) {
+         * Vector<Integer> possible =
+         * tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
+         * for (int k = 0; k < possible.size(); k++) {
+         * tempBoard.updateBoard(i, j, possible.get(k) / 10, possible.get(k) % 10);
+         * for (int l = 0; l < 8; l++) {
+         * for (int m = 0; m < 8; m++) {
+         * if (tempBoard.board[l][m] != null) {
+         * if (tempBoard.board[l][m].color != tempBoard.board[kingX][kingY].color) {
+         * Vector<Integer> possible2 =
+         * tempBoard.board[l][m].possibleMoves(tempBoard.board, l, m);
+         * if(possible2.contains((kingX*10)+kingY)){
+         * evadable = false;
+         * }
+         * }
+         * }
+         * }
+         * }
+         * }
+         * }
+         * }
+         * }
+         * }
+         * if(!evadable){
+         * return true;
+         * }
+         * for (int i = 0; i < 8; i++) {
+         * for (int j = 0; j < 8; j++) {
+         * if (tempBoard.board[i][j] != null) {
+         * if (tempBoard.board[i][j].color == color) {
+         * Vector<Integer> possible =
+         * tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
+         * for (int k = 0; k < possible.size(); k++) {
+         * tempBoard.updateBoard(i, j, possible.get(k) / 10, possible.get(k) % 10);
+         * if (!isCheck(tempBoard.board, kingX, kingY, color)) {
+         * tempBoard.createCopy(gameBoard);
+         * return false;
+         * }
+         * tempBoard.createCopy(gameBoard);
+         * }
+         * }
+         * }
+         * }
+         * }
+         * }
+         * return true;
+         */
     }
 
     // Returns true if game has reached Stale Mate
@@ -327,12 +377,12 @@ public class MyFrame extends JFrame implements MouseListener {
         String s = gameBoard.board[selectedX][selectedY].getClass().getSimpleName();
         boolean color = gameBoard.board[selectedX][selectedY].color;
         ImageIcon img = returnImg(s, color);
-        
-            ((JPanel) mainPanel.getComponent(newCompNo)).removeAll();
-            ((JPanel) mainPanel.getComponent(newCompNo)).add(new JLabel(img));
-            ((JPanel) mainPanel.getComponent(compNo)).removeAll();
-            ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon()));
-        
+
+        ((JPanel) mainPanel.getComponent(newCompNo)).removeAll();
+        ((JPanel) mainPanel.getComponent(newCompNo)).add(new JLabel(img));
+        ((JPanel) mainPanel.getComponent(compNo)).removeAll();
+        ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon()));
+
         gameBoard.updateBoard(selectedX, selectedY, x, y);
         if (gameBoard.board[x][y].getClass().getSimpleName().equals("Pawn")) {
             gameBoard.board[x][y].updateFirstMove();
