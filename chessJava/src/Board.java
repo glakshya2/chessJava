@@ -1,5 +1,5 @@
 public class Board {
-    
+
     public Piece[][] board = new Piece[8][8];
 
     public void setBoard(Piece[][] p) {
@@ -81,7 +81,9 @@ public class Board {
             for (int j = 0; j < 8; j++) {
                 if (x.board[i][j] != null) {
                     board[i][j] = returnPiece(x.board[i][j].getClass().getSimpleName(), x.board[i][j].isColor());
-                    if (board[i][j].getClass().getSimpleName().equals("Pawn")) {
+                    if (board[i][j].getClass().getSimpleName().equals("Pawn")
+                            || board[i][j].getClass().getSimpleName().equals("King")
+                            || board[i][j].getClass().getSimpleName().equals("Rook")) {
                         board[i][j].setFirstMove(x.board[i][j].isFirstMove());
                     }
                 } else {

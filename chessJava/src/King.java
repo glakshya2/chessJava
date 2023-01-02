@@ -1,10 +1,18 @@
 import java.util.Vector;
 
 public class King extends Piece {
+    
+    //public boolean isFirstMove = true;
 
+    @Override
+    public void updateFirstMove(){
+        super.updateFirstMove();
+    }
     King(boolean color) {
         super(color);
     }
+
+    
 
     @Override
     boolean isValidMove(Piece[][] board, int startX, int startY, int endX, int endY) {
@@ -117,6 +125,7 @@ public class King extends Piece {
                 list.add(((startX - 1) * 10) + (startY - 1));
             }
         }
+        
         return list;
     }
 }

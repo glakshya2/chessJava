@@ -2,6 +2,13 @@ import java.util.Vector;
 
 public class Rook extends Piece {
 
+    //public boolean isFirstMove = true;
+
+    @Override
+    public void updateFirstMove(){
+        super.updateFirstMove();
+    }
+
     Rook(boolean color) {
         super(color);
     }

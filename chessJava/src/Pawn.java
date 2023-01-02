@@ -2,7 +2,7 @@ import java.util.Vector;
 
 public class Pawn extends Piece {
     
-    public boolean isFirstMove = true;
+    //public boolean isFirstMove = true;
 
     Pawn(boolean color) {
         super(color);
@@ -10,7 +10,7 @@ public class Pawn extends Piece {
 
     @Override
     public void updateFirstMove() {
-        isFirstMove = false;
+        super.updateFirstMove();
     }
 
     @Override
