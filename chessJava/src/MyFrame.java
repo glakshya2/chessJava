@@ -365,6 +365,21 @@ public class MyFrame extends JFrame implements MouseListener {
                 list.set(k, ((listX * 10) + listY));
             }
         }
+        if (gameBoard.board[selectedX][selectedY].getClass().getSimpleName().equals("Pawn")) {
+            int position = -1;
+            boolean found = false;
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i) / 10 == gameBoard.returnKingX(!turn)
+                        && list.get(i) % 10 == gameBoard.returnKingY(!turn)) {
+                    position = i;
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                list.remove(position);
+            }
+        }
         for (int i = 0; i < list.size(); i++) {
             int listX = list.elementAt(i) / 10;
             int listY = list.elementAt(i) % 10;
