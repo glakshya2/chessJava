@@ -36,7 +36,9 @@ public class King extends Piece {
                 return false;
             }
             if (currentBoard.board[5][0] == null && currentBoard.board[6][0] == null) {
-                return true;
+                if(!MyFrame.isCheck(currentBoard, 5, 0, color) && !MyFrame.isCheck(currentBoard, 6, 0, color)){
+                    return true;
+                }
             }
             return false;
         } else {
@@ -59,7 +61,9 @@ public class King extends Piece {
                 return false;
             }
             if (currentBoard.board[1][0] == null && currentBoard.board[2][0] == null) {
-                return true;
+                if(!MyFrame.isCheck(currentBoard, 1, 0, color) && !MyFrame.isCheck(currentBoard, 2, 0, color)){
+                    return true;
+                }
             }
             return false;
         }
@@ -90,7 +94,9 @@ public class King extends Piece {
                 return false;
             }
             if (currentBoard.board[1][0] == null && currentBoard.board[2][0] == null && currentBoard.board[3][0]==null) {
-                return true;
+                if(!MyFrame.isCheck(currentBoard, 1, 0, color) && !MyFrame.isCheck(currentBoard, 2, 0, color) && !MyFrame.isCheck(currentBoard, 3, 0, color)){
+                    return true;
+                }
             }
             return false;
         } else {
@@ -113,7 +119,9 @@ public class King extends Piece {
                 return false;
             }
             if (currentBoard.board[4][0] == null && currentBoard.board[5][0] == null && currentBoard.board[6][0] == null) {
-                return true;
+                if(!MyFrame.isCheck(currentBoard, 4, 0, color) && !MyFrame.isCheck(currentBoard, 5, 0, color) && !MyFrame.isCheck(currentBoard, 6, 0, color)){
+                    return true;
+                }
             }
             return false;
         }
