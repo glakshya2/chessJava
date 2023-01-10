@@ -27,6 +27,7 @@ public class Board {
                 flipped[7 - i][7 - j] = board[i][j];
             }
         }
+        
         return flipped;
     }
 

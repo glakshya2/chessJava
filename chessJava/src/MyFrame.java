@@ -24,7 +24,7 @@ public class MyFrame extends JFrame implements MouseListener {
                             list = temp.board[i][j].possibleMoves(temp, i, j);
                         } else {
                             Board newBoard = new Board();
-                            newBoard.createCopy(newBoard);
+                            newBoard.createCopy(temp);
                             newBoard.setBoard(newBoard.flipBoard());
                             list = temp.board[i][j].possibleMoves(newBoard, 7 - i, 7 - j);
                             for (int k = 0; k < list.size(); k++) {
