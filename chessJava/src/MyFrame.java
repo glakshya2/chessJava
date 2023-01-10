@@ -46,9 +46,9 @@ public class MyFrame extends JFrame implements MouseListener {
 
     // Returns a vector containing positions of pieces that the given king is under
     // check from
-    static Vector<Integer> checkList(Piece[][] board, int kingX, int kingY) {
+    static Vector<Integer> checkList(Board currentBoard, int kingX, int kingY) {
         Board tempBoard = new Board();
-        tempBoard.createCopy(gameBoard);
+        tempBoard.createCopy(currentBoard);
         boolean color = tempBoard.board[kingX][kingY].color;
         int king = (kingX * 10) + kingY;
         Vector<Integer> list = new Vector<Integer>();
@@ -56,12 +56,23 @@ public class MyFrame extends JFrame implements MouseListener {
             for (int j = 0; j < 8; j++) {
                 if (tempBoard.board[i][j] != null) {
                     if (color != tempBoard.board[i][j].color) {
-                        Vector<Integer> list1 = tempBoard.board[i][j].possibleMoves(tempBoard, i, j);
-                        for (int k = 0; k < list1.size(); k++) {
-                            if (list1.get(k) == king) {
-                                list.add((i * 10) + j);
-                                break;
+                        Vector<Integer> list1 = new Vector<Integer>();
+                        if (tempBoard.board[i][j].color) {
+                            list1 = tempBoard.board[i][j].possibleMoves(tempBoard, i, j);
+                        } else {
+                            Board newBoard = new Board();
+                            newBoard.createCopy(tempBoard);
+                            newBoard.setBoard(newBoard.flipBoard());
+                            list1 = tempBoard.board[i][j].possibleMoves(newBoard, 7 - i, 7 - j);
+                            for (int k = 0; k < list1.size(); k++) {
+                                int listX = 7 - (list1.get(k) / 10);
+                                int listY = 7 - (list1.get(k) % 10);
+                                list1.set(k, ((listX * 10) + listY));
                             }
+                        }
+                        if (list1.contains(king)) {
+                            list.add((i * 10) + j);
+
                         }
                     }
                 }
@@ -80,7 +91,20 @@ public class MyFrame extends JFrame implements MouseListener {
         if (!isCheck(tempBoard, kingX, kingY, color)) {
             return false;
         }
-        Vector<Integer> list = tempBoard.board[kingX][kingY].possibleMoves(tempBoard, kingX, kingY);
+        Vector<Integer> list = new Vector<Integer>();
+        if (tempBoard.board[kingX][kingY].color) {
+            list = tempBoard.board[kingX][kingY].possibleMoves(tempBoard, kingX, kingY);
+        } else {
+            Board newBoard = new Board();
+            newBoard.createCopy(newBoard);
+            newBoard.setBoard(newBoard.flipBoard());
+            list = tempBoard.board[kingX][kingY].possibleMoves(newBoard, 7 - kingX, 7 - kingY);
+            for (int k = 0; k < list.size(); k++) {
+                int listX = 7 - (list.get(k) / 10);
+                int listY = 7 - (list.get(k) % 10);
+                list.set(k, ((listX * 10) + listY));
+            }
+        }
         if (list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 tempBoard.updateBoard(kingX, kingY, list.get(i) / 10, list.get(i) % 10);
@@ -97,7 +121,20 @@ public class MyFrame extends JFrame implements MouseListener {
             for (int j = 0; j < 8; j++) {
                 if (tempBoard.board[i][j] != null) {
                     if (tempBoard.board[i][j].color == tempBoard.board[kingX][kingY].color) {
-                        Vector<Integer> possible = tempBoard.board[i][j].possibleMoves(tempBoard, i, j);
+                        Vector<Integer> possible = new Vector<Integer>();
+                        if (tempBoard.board[i][j].color) {
+                            possible = tempBoard.board[i][j].possibleMoves(tempBoard, i, j);
+                        } else {
+                            Board newBoard = new Board();
+                            newBoard.createCopy(tempBoard);
+                            newBoard.setBoard(newBoard.flipBoard());
+                            possible = tempBoard.board[i][j].possibleMoves(newBoard, 7 - i, 7 - j);
+                            for (int k = 0; k < list.size(); k++) {
+                                int listX = 7 - (list.get(k) / 10);
+                                int listY = 7 - (list.get(k) % 10);
+                                list.set(k, ((listX * 10) + listY));
+                            }
+                        }
                         for (int k = 0; k < possible.size(); k++) {
                             if (i == kingX && j == kingY) {
                                 newKingX = possible.get(k) / 10;
@@ -108,8 +145,21 @@ public class MyFrame extends JFrame implements MouseListener {
                                 for (int m = 0; m < 8; m++) {
                                     if (tempBoard.board[l][m] != null) {
                                         if (tempBoard.board[l][m].color != color) {
-                                            Vector<Integer> possible2 = tempBoard.board[l][m]
-                                                    .possibleMoves(tempBoard, l, m);
+                                            Vector<Integer> possible2 = new Vector<Integer>();
+                                            if (tempBoard.board[l][m].color) {
+                                                possible2 = tempBoard.board[l][m]
+                                                        .possibleMoves(tempBoard, l, m);
+                                            } else {
+                                                Board newBoard = new Board();
+                                                newBoard.createCopy(tempBoard);
+                                                newBoard.setBoard(newBoard.flipBoard());
+                                                possible2 = tempBoard.board[l][m].possibleMoves(newBoard, 7 - l, 7 - m);
+                                                for (int n = 0; n < list.size(); n++) {
+                                                    int listX = 7 - (list.get(n) / 10);
+                                                    int listY = 7 - (list.get(n) % 10);
+                                                    list.set(n, ((listX * 10) + listY));
+                                                }
+                                            }
                                             if (possible2.contains((newKingX * 10) + newKingY)) {
                                                 evadable = false;
                                             }
@@ -138,7 +188,20 @@ public class MyFrame extends JFrame implements MouseListener {
             for (int j = 0; j < 8; j++) {
                 if (currentBoard.board[i][j] != null) {
                     if (currentBoard.board[i][j].color == color) {
-                        Vector<Integer> list = currentBoard.board[i][j].possibleMoves(currentBoard, i, j);
+                        Vector<Integer> list = new Vector<Integer>();
+                        if (currentBoard.board[i][j].color) {
+                            list = currentBoard.board[i][j].possibleMoves(currentBoard, i, j);
+                        } else {
+                            Board newBoard = new Board();
+                            newBoard.createCopy(newBoard);
+                            newBoard.setBoard(newBoard.flipBoard());
+                            list = currentBoard.board[i][j].possibleMoves(newBoard, 7 - i, 7 - j);
+                            for (int k = 0; k < list.size(); k++) {
+                                int listX = 7 - (list.get(k) / 10);
+                                int listY = 7 - (list.get(k) % 10);
+                                list.set(k, ((listX * 10) + listY));
+                            }
+                        }
                         if (!list.isEmpty()) {
                             return false;
                         }
@@ -296,14 +359,15 @@ public class MyFrame extends JFrame implements MouseListener {
             newBoard.createCopy(gameBoard);
             newBoard.setBoard(newBoard.flipBoard());
             list = gameBoard.board[x][y].possibleMoves(newBoard, 7 - x, 7 - y);
+            for (int k = 0; k < list.size(); k++) {
+                int listX = 7 - (list.get(k) / 10);
+                int listY = 7 - (list.get(k) % 10);
+                list.set(k, ((listX * 10) + listY));
+            }
         }
         for (int i = 0; i < list.size(); i++) {
             int listX = list.elementAt(i) / 10;
             int listY = list.elementAt(i) % 10;
-            if (!turn) {
-                listX = 7 - listX;
-                listY = 7 - listY;
-            }
             int compNo;
             compNo = getCompNo(listX, listY);
             highlighted.add(compNo);
