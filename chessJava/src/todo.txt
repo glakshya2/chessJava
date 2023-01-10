@@ -1,6 +1,6 @@
 1. center icons
-2. pawn can not kill king but can check and checkmate king
-3. implement castling
-4. implement pawn promotion
-5. implement enpassant
-6. use is stalemate and implement 3 move repeat condition for stalemate
+2. implement castling
+3. Implement pawn promotion
+4. implement enpassant
+5. use is stalemate and implement 3 move repeat condition for stalemate
+6. No stupid moves under check
