@@ -12,6 +12,9 @@ public class Board {
 
     // update board when move is performed
     public void updateBoard(int startX, int startY, int endX, int endY) {
+        if (board[startX][startY].getClass().getSimpleName().equals("Pawn")) {
+            board[startX][startY].updateFirstMove();
+        }
         board[endX][endY] = board[startX][startY];
         board[startX][startY] = null;
     }
@@ -76,14 +79,11 @@ public class Board {
     }
 
     public void createCopy(Board x) {
-
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (x.board[i][j] != null) {
                     board[i][j] = returnPiece(x.board[i][j].getClass().getSimpleName(), x.board[i][j].isColor());
-                    if (board[i][j].getClass().getSimpleName().equals("Pawn")
-                            || board[i][j].getClass().getSimpleName().equals("King")
-                            || board[i][j].getClass().getSimpleName().equals("Rook")) {
+                    if (board[i][j].getClass().getSimpleName().equals("Pawn")) {
                         board[i][j].setFirstMove(x.board[i][j].isFirstMove());
                     }
                 } else {

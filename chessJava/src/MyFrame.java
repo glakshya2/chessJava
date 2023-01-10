@@ -5,20 +5,34 @@ import java.util.Vector;
 
 public class MyFrame extends JFrame implements MouseListener {
 
-    static Board gameBoard = new Board();
+    static boolean turn = true; // True for white, false for black
 
     // Returns true if king of given color is under check
-    static boolean isCheck(Piece[][] board, int kingX, int kingY, boolean color) {
+    static boolean isCheck(Board currentBoard, int kingX, int kingY, boolean color) {
         int king = (kingX * 10) + kingY;
         for (int i = 0; i < 8; i++) {
             Vector<Integer> list;
             for (int j = 0; j < 8; j++) {
-                if (board[i][j] != null) {
-                    if (color != board[i][j].color) {
-                        if (board[i][j].getClass().getSimpleName().equals("King")) {
+                if (currentBoard.board[i][j] != null) {
+                    if (color != currentBoard.board[i][j].color) {
+                        if (currentBoard.board[i][j].getClass().getSimpleName().equals("King")) {
                             continue;
                         }
-                        list = board[i][j].possibleMoves(board, i, j);
+                        Board temp = new Board();
+                        temp.createCopy(currentBoard);
+                        if (turn) {
+                            list = temp.board[i][j].possibleMoves(temp, i, j);
+                        } else {
+                            Board newBoard = new Board();
+                            newBoard.createCopy(newBoard);
+                            newBoard.setBoard(newBoard.flipBoard());
+                            list = temp.board[i][j].possibleMoves(newBoard, 7 - i, 7 - j);
+                            for (int k = 0; k < list.size(); k++) {
+                                int listX = 7 - (list.get(k) / 10);
+                                int listY = 7 - (list.get(k) % 10);
+                                list.set(k, ((listX * 10) + listY));
+                            }
+                        }
                         if (list.contains(king)) {
                             return true;
                         }
@@ -42,7 +56,7 @@ public class MyFrame extends JFrame implements MouseListener {
             for (int j = 0; j < 8; j++) {
                 if (tempBoard.board[i][j] != null) {
                     if (color != tempBoard.board[i][j].color) {
-                        Vector<Integer> list1 = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
+                        Vector<Integer> list1 = tempBoard.board[i][j].possibleMoves(tempBoard, i, j);
                         for (int k = 0; k < list1.size(); k++) {
                             if (list1.get(k) == king) {
                                 list.add((i * 10) + j);
@@ -57,20 +71,20 @@ public class MyFrame extends JFrame implements MouseListener {
     }
 
     // Returns true if there is Check kMate
-    static boolean isCheckMate(Piece[][] board, int kingX, int kingY) {
+    static boolean isCheckMate(Board currentBoard, int kingX, int kingY) {
         Board tempBoard = new Board();
-        tempBoard.createCopy(gameBoard);
+        tempBoard.createCopy(currentBoard);
         boolean color = tempBoard.board[kingX][kingY].color;
         int newKingX = kingX;
         int newKingY = kingY;
-        if (!isCheck(tempBoard.board, kingX, kingY, color)) {
+        if (!isCheck(tempBoard, kingX, kingY, color)) {
             return false;
         }
-        Vector<Integer> list = tempBoard.board[kingX][kingY].possibleMoves(tempBoard.board, kingX, kingY);
+        Vector<Integer> list = tempBoard.board[kingX][kingY].possibleMoves(tempBoard, kingX, kingY);
         if (list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 tempBoard.updateBoard(kingX, kingY, list.get(i) / 10, list.get(i) % 10);
-                if (!isCheck(tempBoard.board, list.get(i) / 10, list.get(i) % 10, color)) {
+                if (!isCheck(tempBoard, list.get(i) / 10, list.get(i) % 10, color)) {
                     tempBoard.createCopy(gameBoard);
                     return false;
                 }
@@ -83,7 +97,7 @@ public class MyFrame extends JFrame implements MouseListener {
             for (int j = 0; j < 8; j++) {
                 if (tempBoard.board[i][j] != null) {
                     if (tempBoard.board[i][j].color == tempBoard.board[kingX][kingY].color) {
-                        Vector<Integer> possible = tempBoard.board[i][j].possibleMoves(tempBoard.board, i, j);
+                        Vector<Integer> possible = tempBoard.board[i][j].possibleMoves(tempBoard, i, j);
                         for (int k = 0; k < possible.size(); k++) {
                             if (i == kingX && j == kingY) {
                                 newKingX = possible.get(k) / 10;
@@ -95,7 +109,7 @@ public class MyFrame extends JFrame implements MouseListener {
                                     if (tempBoard.board[l][m] != null) {
                                         if (tempBoard.board[l][m].color != color) {
                                             Vector<Integer> possible2 = tempBoard.board[l][m]
-                                                    .possibleMoves(tempBoard.board, l, m);
+                                                    .possibleMoves(tempBoard, l, m);
                                             if (possible2.contains((newKingX * 10) + newKingY)) {
                                                 evadable = false;
                                             }
@@ -116,15 +130,15 @@ public class MyFrame extends JFrame implements MouseListener {
     }
 
     // Returns true if game has reached Stale Mate
-    static boolean isStaleMate(Piece[][] board, boolean color, int kingX, int kingY) {
-        if (!isCheck(board, kingX, kingY, board[kingX][kingY].color)) {
+    static boolean isStaleMate(Board currentBoard, boolean color, int kingX, int kingY) {
+        if (!isCheck(currentBoard, kingX, kingY, currentBoard.board[kingX][kingY].color)) {
             return false;
         }
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (board[i][j] != null) {
-                    if (board[i][j].color == color) {
-                        Vector<Integer> list = board[i][j].possibleMoves(board, i, j);
+                if (currentBoard.board[i][j] != null) {
+                    if (currentBoard.board[i][j].color == color) {
+                        Vector<Integer> list = currentBoard.board[i][j].possibleMoves(currentBoard, i, j);
                         if (!list.isEmpty()) {
                             return false;
                         }
@@ -135,10 +149,10 @@ public class MyFrame extends JFrame implements MouseListener {
         return true;
     }
 
+    static Board gameBoard = new Board();
     JPanel mainPanel;
     JPanel panel;
     JFrame frame;
-    boolean turn = true; // True for white, false for black
 
     Vector<Integer> highlighted = new Vector<Integer>();
 
@@ -276,55 +290,21 @@ public class MyFrame extends JFrame implements MouseListener {
         clearHighlight();
         Vector<Integer> list;
         if (turn) {
-            list = gameBoard.board[x][y].possibleMoves(gameBoard.board, x, y);
+            list = gameBoard.board[x][y].possibleMoves(gameBoard, x, y);
         } else {
-            list = gameBoard.board[x][y].possibleMoves(gameBoard.flipBoard(), 7 - x, 7 - y);
-        }
-        if (!turn) {
-            for (int i = 0; i < list.size(); i++) {
-                int listX = list.elementAt(i) / 10;
-                int listY = list.elementAt(i) % 10;
-                listX = 7 - listX;
-                listY = 7 - listY;
-                list.set(i, (listX * 10) + listY);
-            }
-        }
-        if (gameBoard.board[x][y].getClass().getSimpleName().equals("King")) {
-            if (turn) {
-                if (isLeftCastlingPossible()) {
-                    list.add(20);
-                }
-                if (isRightCastlingPossible()) {
-                    list.add(60);
-                }
-            } else {
-                if (isLeftCastlingPossible()) {
-                    list.add(27);
-                }
-                if (isRightCastlingPossible()) {
-                    list.add(67);
-                }
-            }
-        }
-        if (gameBoard.board[selectedX][selectedY].getClass().getSimpleName().equals("Pawn")) {
-            int position = -1;
-            boolean found = false;
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i) / 10 == gameBoard.returnKingX(!turn)
-                        && list.get(i) % 10 == gameBoard.returnKingY(!turn)) {
-                    position = i;
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                list.remove(position);
-            }
+            Board newBoard = new Board();
+            newBoard.createCopy(gameBoard);
+            newBoard.setBoard(newBoard.flipBoard());
+            list = gameBoard.board[x][y].possibleMoves(newBoard, 7 - x, 7 - y);
         }
         for (int i = 0; i < list.size(); i++) {
-            int compNo;
             int listX = list.elementAt(i) / 10;
             int listY = list.elementAt(i) % 10;
+            if (!turn) {
+                listX = 7 - listX;
+                listY = 7 - listY;
+            }
+            int compNo;
             compNo = getCompNo(listX, listY);
             highlighted.add(compNo);
             if (gameBoard.board[listX][listY] != null) {
@@ -354,18 +334,24 @@ public class MyFrame extends JFrame implements MouseListener {
         }
     }
 
-    public void updateGUI() {
+    public void resetGUI() {
         for (int i = 0; i < 64; i++) {
             ((JPanel) mainPanel.getComponent(i)).removeAll();
-            if (gameBoard.board[getX(i)][getY(i)] != null) {
-                String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
-                boolean color = gameBoard.board[getX(i)][getY(i)].color;
-                ImageIcon img = returnImg(s, color);
-                ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
-            }
         }
-        mainPanel.validate();
-        mainPanel.repaint();
+        for (int i = 0; i < 16; i++) {
+            ((JPanel) mainPanel.getComponent(i)).removeAll();
+            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
+            boolean color = gameBoard.board[getX(i)][getY(i)].color;
+            ImageIcon img = returnImg(s, color);
+            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
+        }
+        for (int i = 48; i < 64; i++) {
+            ((JPanel) mainPanel.getComponent(i)).removeAll();
+            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
+            boolean color = gameBoard.board[getX(i)][getY(i)].color;
+            ImageIcon img = returnImg(s, color);
+            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
+        }
     }
 
     // Updates game state after making move
@@ -381,57 +367,30 @@ public class MyFrame extends JFrame implements MouseListener {
         ((JPanel) mainPanel.getComponent(newCompNo)).add(new JLabel(img));
         ((JPanel) mainPanel.getComponent(compNo)).removeAll();
         ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon()));
-        if (isUserCastling(x, y)) {
-            if (turn) {
-                if (x == 6) {
-                    gameBoard.updateBoard(4, 0, 6, 0);
-                    gameBoard.updateBoard(7, 0, 5, 0);
-                } else if (x == 2) {
-                    gameBoard.updateBoard(4, 0, 2, 0);
-                    gameBoard.updateBoard(0, 0, 3, 0);
-                }
-            } else {
-                if (x == 6) {
-                    gameBoard.updateBoard(4, 7, 6, 7);
-                    gameBoard.updateBoard(7, 7, 5, 7);
-                } else if (x == 2) {
-                    gameBoard.updateBoard(4, 7, 2, 7);
-                    gameBoard.updateBoard(0, 7, 3, 7);
-                }
-            }
-        } else {
-            gameBoard.updateBoard(selectedX, selectedY, x, y);
-        }
-        updateGUI();
-        if (gameBoard.board[x][y].getClass().getSimpleName().equals("Pawn")) {
-            gameBoard.board[x][y].updateFirstMove();
-        }
-        if (gameBoard.board[x][y].getClass().getSimpleName().equals("King")) {
-            gameBoard.board[x][y].updateFirstMove();
-        }
-        if (gameBoard.board[x][y].getClass().getSimpleName().equals("Rook")) {
-            gameBoard.board[x][y].updateFirstMove();
-        }
+
+        gameBoard.updateBoard(selectedX, selectedY, x, y);
+
         isSelected = false;
         int kingX = gameBoard.returnKingX(!turn);
         int kingY = gameBoard.returnKingY(!turn);
-        if (isCheck(gameBoard.board, kingX, kingY, !turn)) {
+        if (isCheck(gameBoard, kingX, kingY, !turn)) {
             JOptionPane.showMessageDialog(frame, "Check");
         }
         turn = !turn;
-        if (isCheckMate(gameBoard.board, kingX, kingY)) {
+        if (isCheckMate(gameBoard, kingX, kingY)) {
             if (!turn) {
                 JOptionPane.showMessageDialog(frame, "CheckMate!, White wins");
-                gameBoard.set();
-                updateGUI();
-                turn = true;
             } else {
                 JOptionPane.showMessageDialog(frame, "Checkmate!, Black Wins");
-                gameBoard.set();
-                updateGUI();
-                turn = true;
             }
+            gameBoard.set();
+            resetGUI();
+            mainPanel.validate();
+            mainPanel.repaint();
+            turn = true;
         }
+        mainPanel.validate();
+        mainPanel.repaint();
     }
 
     // Moves selected piece to selected position
@@ -480,99 +439,4 @@ public class MyFrame extends JFrame implements MouseListener {
         // Not Needed
     }
 
-    public boolean isRightCastlingPossible() {
-        if (isCheck(gameBoard.board, gameBoard.returnKingX(turn), gameBoard.returnKingY(turn), turn)) {
-            return false;
-        }
-        if (turn) {
-            if (gameBoard.board[4][0] != null) {
-                if (gameBoard.board[4][0].getClass().getSimpleName().equals("King")) {
-                    if (gameBoard.board[4][0].isFirstMove) {
-                        if (gameBoard.board[7][0] != null) {
-                            if (gameBoard.board[7][0].getClass().getSimpleName().equals("Rook")) {
-                                if (gameBoard.board[7][0].isFirstMove) {
-                                    if (gameBoard.board[5][0] == null && gameBoard.board[6][0] == null) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            if (gameBoard.board[4][7] != null) {
-                if (gameBoard.board[4][7].getClass().getSimpleName().equals("King")) {
-                    if (gameBoard.board[4][7].isFirstMove) {
-                        if (gameBoard.board[7][7] != null) {
-                            if (gameBoard.board[7][7].getClass().getSimpleName().equals("Rook")) {
-                                if (gameBoard.board[7][7].isFirstMove) {
-                                    if (gameBoard.board[5][7] == null && gameBoard.board[6][7] == null) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean isLeftCastlingPossible() {
-        if (turn) {
-            if (gameBoard.board[4][0] != null) {
-                if (gameBoard.board[4][0].getClass().getSimpleName().equals("King")) {
-                    if (gameBoard.board[4][0].isFirstMove) {
-                        if (gameBoard.board[0][0] != null) {
-                            if (gameBoard.board[0][0].getClass().getSimpleName().equals("Rook")) {
-                                if (gameBoard.board[0][0].isFirstMove) {
-                                    if (gameBoard.board[1][0] == null && gameBoard.board[2][0] == null
-                                            && gameBoard.board[3][0] == null) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            if (gameBoard.board[4][7] != null) {
-                if (gameBoard.board[4][7].getClass().getSimpleName().equals("King")) {
-                    if (gameBoard.board[4][7].isFirstMove) {
-                        if (gameBoard.board[0][7] != null) {
-                            if (gameBoard.board[0][7].getClass().getSimpleName().equals("Rook")) {
-                                if (gameBoard.board[0][7].isFirstMove) {
-                                    if (gameBoard.board[1][7] == null && gameBoard.board[2][7] == null
-                                            && gameBoard.board[3][7] == null) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean isUserCastling(int x, int y) {
-        if (turn) {
-            if (isLeftCastlingPossible() || isRightCastlingPossible()) {
-                if ((x == 6 && y == 0) || (x == 2 && y == 0)) {
-                    return true;
-                }
-            }
-        } else {
-            if (isLeftCastlingPossible() || isRightCastlingPossible()) {
-                if ((x == 6 && y == 7) || (x == 2 && y == 7)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

@@ -7,16 +7,16 @@ public class Bishop extends Piece {
     }
 
     @Override
-    boolean isValidMove(Piece[][] board, int startX, int startY, int endX, int endY) {
-        if (board[endX][endY] != null) {
-            if (this.color == board[endX][endY].color) {
+    boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY) {
+        if (currentBoard.board[endX][endY] != null) {
+            if (this.color == currentBoard.board[endX][endY].color) {
                 return false;
             }
         }
         if (startX < endX && startY < endY) {
             int j = startY + 1;
             for (int i = startX + 1; i < endX; i++) {
-                if (board[i][j] != null) {
+                if (currentBoard.board[i][j] != null) {
                     return false;
                 }
                 j++;
@@ -24,7 +24,7 @@ public class Bishop extends Piece {
         } else if (startX > endX && startY > endY) {
             int j = startY - 1;
             for (int i = startX - 1; i > endX; i--) {
-                if (board[i][j] != null) {
+                if (currentBoard.board[i][j] != null) {
                     return false;
                 }
                 j--;
@@ -32,7 +32,7 @@ public class Bishop extends Piece {
         } else if (startX < endX && startY > endY) {
             int j = startY - 1;
             for (int i = startX + 1; i < endX; i++) {
-                if (board[i][j] != null) {
+                if (currentBoard.board[i][j] != null) {
                     return false;
                 }
                 j--;
@@ -40,7 +40,7 @@ public class Bishop extends Piece {
         } else if (startX > endX && startY < endY) {
             int j = startY + 1;
             for (int i = startX - 1; i > endX; i--) {
-                if (board[i][j] != null) {
+                if (currentBoard.board[i][j] != null) {
                     return false;
                 }
                 j++;
@@ -49,14 +49,13 @@ public class Bishop extends Piece {
         return true;
     }
 
-    Vector<Integer> possibleMoves(Piece[][] board, int startX, int startY) {
+    Vector<Integer> possibleMoves(Board currentBoard, int startX, int startY) {
         Vector<Integer> list = new Vector<Integer>();
         int j = startY + 1;
         for (int i = startX + 1; i < 8; i++) {
             if (j < 8) {
-                if (isValidMove(board, startX, startY, i, j)) {
+                if (isValidMove(currentBoard, startX, startY, i, j)) {
                     list.add((i * 10) + j);
-
                     j++;
                 } else {
                     break;
@@ -68,7 +67,7 @@ public class Bishop extends Piece {
         j = startY + 1;
         for (int i = startX - 1; i >= 0; i--) {
             if (j < 8) {
-                if (isValidMove(board, startX, startY, i, j)) {
+                if (isValidMove(currentBoard, startX, startY, i, j)) {
                     list.add((i * 10) + j);
                     j++;
                 } else {
@@ -81,7 +80,7 @@ public class Bishop extends Piece {
         j = startY - 1;
         for (int i = startX + 1; i < 8; i++) {
             if (j >= 0) {
-                if (isValidMove(board, startX, startY, i, j)) {
+                if (isValidMove(currentBoard, startX, startY, i, j)) {
                     list.add((i * 10) + j);
                     j--;
                 } else {
@@ -94,7 +93,7 @@ public class Bishop extends Piece {
         j = startY - 1;
         for (int i = startX - 1; i >= 0; i--) {
             if (j >= 0) {
-                if (isValidMove(board, startX, startY, i, j)) {
+                if (isValidMove(currentBoard, startX, startY, i, j)) {
                     list.add((i * 10) + j);
                     j--;
                 } else {
