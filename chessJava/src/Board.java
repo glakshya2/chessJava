@@ -14,9 +14,9 @@ public class Board {
     public void updateBoard(int startX, int startY, int endX, int endY) {
         if (board[startX][startY].getClass().getSimpleName().equals("Pawn")) {
             board[startX][startY].updateFirstMove();
-        } else if (board[startX][startY].getClass().getSimpleName().equals("King")){
+        } else if (board[startX][startY].getClass().getSimpleName().equals("King")) {
             board[startX][startY].updateFirstMove();
-        } else if (board[startX][startY].getClass().getSimpleName().equals("Rook")){
+        } else if (board[startX][startY].getClass().getSimpleName().equals("Rook")) {
             board[startX][startY].updateFirstMove();
         }
         board[endX][endY] = board[startX][startY];
@@ -31,7 +31,6 @@ public class Board {
                 flipped[7 - i][7 - j] = board[i][j];
             }
         }
-        
         return flipped;
     }
 
@@ -90,9 +89,9 @@ public class Board {
                     board[i][j] = returnPiece(x.board[i][j].getClass().getSimpleName(), x.board[i][j].isColor());
                     if (board[i][j].getClass().getSimpleName().equals("Pawn")) {
                         board[i][j].setFirstMove(x.board[i][j].isFirstMove());
-                    } else if (board[i][j].getClass().getSimpleName().equals("King")){
+                    } else if (board[i][j].getClass().getSimpleName().equals("King")) {
                         board[i][j].setFirstMove(x.board[i][j].isFirstMove());
-                    } else if (board[i][j].getClass().getSimpleName().equals("Rook")){
+                    } else if (board[i][j].getClass().getSimpleName().equals("Rook")) {
                         board[i][j].setFirstMove(x.board[i][j].isFirstMove());
                     }
                 } else {

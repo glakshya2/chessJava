@@ -7,6 +7,8 @@ public class MyFrame extends JFrame implements MouseListener {
 
     static boolean turn = true; // True for white, false for black
 
+    static Board gameBoard = new Board();
+
     // Returns true if king of given color is under check
     static boolean isCheck(Board currentBoard, int kingX, int kingY, boolean color) {
         int king = (kingX * 10) + kingY;
@@ -211,8 +213,6 @@ public class MyFrame extends JFrame implements MouseListener {
         }
         return true;
     }
-
-    static Board gameBoard = new Board();
     JPanel mainPanel;
     JPanel panel;
     JFrame frame;
