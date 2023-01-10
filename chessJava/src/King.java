@@ -7,6 +7,119 @@ public class King extends Piece {
     }
 
     @Override
+    public void updateFirstMove() {
+        super.updateFirstMove();
+    }
+
+    @Override
+    public boolean isRightCastlingPossible(Board currentBoard) {
+        if (MyFrame.isCheck(currentBoard, currentBoard.returnKingX(color), currentBoard.returnKingY(color), color)) {
+            return false;
+        }
+        if (color) {
+            if (currentBoard.board[4][0] == null) {
+                return false;
+            }
+            if (!currentBoard.board[4][0].getClass().getSimpleName().equals("King")) {
+                return false;
+            }
+            if (!currentBoard.board[4][0].isFirstMove) {
+                return false;
+            }
+            if (currentBoard.board[7][0] == null) {
+                return false;
+            }
+            if (!currentBoard.board[7][0].getClass().getSimpleName().equals("Rook")) {
+                return false;
+            }
+            if (!currentBoard.board[7][0].isFirstMove) {
+                return false;
+            }
+            if (currentBoard.board[5][0] == null && currentBoard.board[6][0] == null) {
+                return true;
+            }
+            return false;
+        } else {
+            if (currentBoard.board[3][0] == null) {
+                return false;
+            }
+            if (!currentBoard.board[3][0].getClass().getSimpleName().equals("King")) {
+                return false;
+            }
+            if (!currentBoard.board[3][0].isFirstMove) {
+                return false;
+            }
+            if (currentBoard.board[0][0] == null) {
+                return false;
+            }
+            if (!currentBoard.board[0][0].getClass().getSimpleName().equals("Rook")) {
+                return false;
+            }
+            if (!currentBoard.board[0][0].isFirstMove) {
+                return false;
+            }
+            if (currentBoard.board[1][0] == null && currentBoard.board[2][0] == null) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isLeftCastlingPossible(Board currentBoard){
+        if (MyFrame.isCheck(currentBoard, currentBoard.returnKingX(color), currentBoard.returnKingY(color), color)) {
+            return false;
+        }
+        if (color) {
+            if (currentBoard.board[4][0] == null) {
+                return false;
+            }
+            if (!currentBoard.board[4][0].getClass().getSimpleName().equals("King")) {
+                return false;
+            }
+            if (!currentBoard.board[4][0].isFirstMove) {
+                return false;
+            }
+            if (currentBoard.board[0][0] == null) {
+                return false;
+            }
+            if (!currentBoard.board[0][0].getClass().getSimpleName().equals("Rook")) {
+                return false;
+            }
+            if (!currentBoard.board[0][0].isFirstMove) {
+                return false;
+            }
+            if (currentBoard.board[1][0] == null && currentBoard.board[2][0] == null && currentBoard.board[3][0]==null) {
+                return true;
+            }
+            return false;
+        } else {
+            if (currentBoard.board[3][0] == null) {
+                return false;
+            }
+            if (!currentBoard.board[3][0].getClass().getSimpleName().equals("King")) {
+                return false;
+            }
+            if (!currentBoard.board[3][0].isFirstMove) {
+                return false;
+            }
+            if (currentBoard.board[7][0] == null) {
+                return false;
+            }
+            if (!currentBoard.board[7][0].getClass().getSimpleName().equals("Rook")) {
+                return false;
+            }
+            if (!currentBoard.board[7][0].isFirstMove) {
+                return false;
+            }
+            if (currentBoard.board[4][0] == null && currentBoard.board[5][0] == null && currentBoard.board[6][0] == null) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    @Override
     boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY) {
 
         if (MyFrame.isCheck(currentBoard, endX, endY, color)) {
@@ -115,6 +228,20 @@ public class King extends Piece {
         if (startX - 1 >= 0 && startY - 1 >= 0) {
             if (isValidMove(currentBoard, startX, startY, startX - 1, startY - 1)) {
                 list.add(((startX - 1) * 10) + (startY - 1));
+            }
+        }
+        if(isLeftCastlingPossible(currentBoard)){
+            if(color){
+                list.add(20);
+            } else {
+                list.add(50);
+            }
+        }
+        if(isRightCastlingPossible(currentBoard)){
+            if(color){
+                list.add(60);
+            } else {
+                list.add(10);
             }
         }
         return list;

@@ -29,6 +29,14 @@ public abstract class Piece {
         this.isFirstMove = isFirstMove;
     }
 
+    public boolean isLeftCastlingPossible(Board currentBoard){
+        return false;
+    }
+
+    public boolean isRightCastlingPossible(Board currentBoard){
+        return false;
+    }
+
     // returns true if move provided is valid
     boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY) {
         if (currentBoard.board[endX][endY] == null || this.color != currentBoard.board[endX][endY].color) {

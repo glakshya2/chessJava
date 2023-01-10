@@ -7,6 +7,11 @@ public class Rook extends Piece {
     }
 
     @Override
+    public void updateFirstMove() {
+        super.updateFirstMove();
+    }
+
+    @Override
     boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY) {
         if (currentBoard.board[endX][endY] != null) {
             if (this.color == currentBoard.board[endX][endY].color) {

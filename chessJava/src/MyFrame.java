@@ -413,24 +413,18 @@ public class MyFrame extends JFrame implements MouseListener {
         }
     }
 
-    public void resetGUI() {
+    public void updateGUI() {
         for (int i = 0; i < 64; i++) {
             ((JPanel) mainPanel.getComponent(i)).removeAll();
+            if (gameBoard.board[getX(i)][getY(i)] != null) {
+                String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
+                boolean color = gameBoard.board[getX(i)][getY(i)].color;
+                ImageIcon img = returnImg(s, color);
+                ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
+            }
         }
-        for (int i = 0; i < 16; i++) {
-            ((JPanel) mainPanel.getComponent(i)).removeAll();
-            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
-            boolean color = gameBoard.board[getX(i)][getY(i)].color;
-            ImageIcon img = returnImg(s, color);
-            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
-        }
-        for (int i = 48; i < 64; i++) {
-            ((JPanel) mainPanel.getComponent(i)).removeAll();
-            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
-            boolean color = gameBoard.board[getX(i)][getY(i)].color;
-            ImageIcon img = returnImg(s, color);
-            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
-        }
+        mainPanel.validate();
+        mainPanel.repaint();
     }
 
     // Updates game state after making move
@@ -447,7 +441,28 @@ public class MyFrame extends JFrame implements MouseListener {
         ((JPanel) mainPanel.getComponent(compNo)).removeAll();
         ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon()));
 
-        gameBoard.updateBoard(selectedX, selectedY, x, y);
+        if (isUserCastling(x, y)) {
+            if (turn) {
+                if (x == 6) {
+                    gameBoard.updateBoard(4, 0, 6, 0);
+                    gameBoard.updateBoard(7, 0, 5, 0);
+                } else if (x == 2) {
+                    gameBoard.updateBoard(4, 0, 2, 0);
+                    gameBoard.updateBoard(0, 0, 3, 0);
+                }
+            } else {
+                if (x == 6) {
+                    gameBoard.updateBoard(4, 7, 6, 7);
+                    gameBoard.updateBoard(7, 7, 5, 7);
+                } else if (x == 2) {
+                    gameBoard.updateBoard(4, 7, 2, 7);
+                    gameBoard.updateBoard(0, 7, 3, 7);
+                }
+            }
+        } else {
+            gameBoard.updateBoard(selectedX, selectedY, x, y);
+        }
+        updateGUI();
 
         isSelected = false;
         int kingX = gameBoard.returnKingX(!turn);
@@ -459,17 +474,16 @@ public class MyFrame extends JFrame implements MouseListener {
         if (isCheckMate(gameBoard, kingX, kingY)) {
             if (!turn) {
                 JOptionPane.showMessageDialog(frame, "CheckMate!, White wins");
+                gameBoard.set();
+                updateGUI();
+                turn = true;
             } else {
                 JOptionPane.showMessageDialog(frame, "Checkmate!, Black Wins");
+                gameBoard.set();
+                updateGUI();
+                turn = true;
             }
-            gameBoard.set();
-            resetGUI();
-            mainPanel.validate();
-            mainPanel.repaint();
-            turn = true;
         }
-        mainPanel.validate();
-        mainPanel.repaint();
     }
 
     // Moves selected piece to selected position
@@ -518,4 +532,28 @@ public class MyFrame extends JFrame implements MouseListener {
         // Not Needed
     }
 
+    public boolean isUserCastling(int x, int y) {
+        if (turn) {
+            if (gameBoard.board[gameBoard.returnKingX(turn)][gameBoard.returnKingY(turn)]
+                    .isLeftCastlingPossible(gameBoard)
+                    || gameBoard.board[gameBoard.returnKingX(turn)][gameBoard.returnKingY(turn)]
+                            .isRightCastlingPossible(gameBoard)) {
+                if ((x == 6 && y == 0) || (x == 2 && y == 0)) {
+                    return true;
+                }
+            }
+        } else {
+            Board temp = new Board();
+            temp.createCopy(gameBoard);
+            temp.setBoard(temp.flipBoard());
+            if (gameBoard.board[gameBoard.returnKingX(turn)][gameBoard.returnKingY(turn)].isLeftCastlingPossible(temp)
+                    || gameBoard.board[gameBoard.returnKingX(turn)][gameBoard.returnKingY(turn)]
+                            .isRightCastlingPossible(temp)) {
+                if ((x == 6 && y == 7) || (x == 2 && y == 7)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
