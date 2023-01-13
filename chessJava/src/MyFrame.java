@@ -22,7 +22,7 @@ public class MyFrame extends JFrame implements MouseListener {
                         }
                         Board temp = new Board();
                         temp.createCopy(currentBoard);
-                        if (turn) {
+                        if (temp.board[i][j].color) {
                             list = temp.board[i][j].possibleMoves(temp, i, j);
                         } else {
                             Board newBoard = new Board();
@@ -348,6 +348,38 @@ public class MyFrame extends JFrame implements MouseListener {
         highlighted.clear();
     }
 
+    public boolean isNotStupid(Board currentBoard, int startX, int startY, int endX, int endY){
+        Board tempBoard = new Board();
+        tempBoard.createCopy(currentBoard);
+        if (isUserCastling(endX, endY)) {
+            if (turn) {
+                if (endX == 6) {
+                    tempBoard.updateBoard(4, 0, 6, 0);
+                    tempBoard.updateBoard(7, 0, 5, 0);
+                } else if (endX == 2) {
+                    tempBoard.updateBoard(4, 0, 2, 0);
+                    tempBoard.updateBoard(0, 0, 3, 0);
+                }
+            } else {
+                if (endX == 6) {
+                    tempBoard.updateBoard(4, 7, 6, 7);
+                    tempBoard.updateBoard(7, 7, 5, 7);
+                } else if (endX == 2) {
+                    tempBoard.updateBoard(4, 7, 2, 7);
+                    tempBoard.updateBoard(0, 7, 3, 7);
+                }
+            }
+        } else {
+            tempBoard.updateBoard(selectedX, selectedY, endX, endY);
+        }
+        int kingX = tempBoard.returnKingX(turn);
+        int kingY = tempBoard.returnKingY(turn);
+        if(!isCheck(tempBoard, kingX, kingY, turn)){
+            return true;
+        }
+        return false;
+    }
+
     // Highlights possible moves of selected piece in GUI
     public void highlightPossible(int x, int y) {
         clearHighlight();
@@ -378,6 +410,18 @@ public class MyFrame extends JFrame implements MouseListener {
             }
             if (found) {
                 list.remove(position);
+            }
+        }
+        if(isCheck(gameBoard, gameBoard.returnKingX(turn), gameBoard.returnKingY(turn), turn)){
+            Vector<Integer> indices = new Vector<Integer>();
+            for(int i = 0; i<list.size(); i++){
+                if(!isNotStupid(gameBoard, x, y, list.get(i)/10, list.get(i)%10)){
+                    indices.add(i);
+                }
+            }
+            for(int i = indices.size()-1; i>-1; i--){
+                int z = indices.get(i);
+                list.remove(z);
             }
         }
         for (int i = 0; i < list.size(); i++) {
@@ -463,7 +507,6 @@ public class MyFrame extends JFrame implements MouseListener {
             gameBoard.updateBoard(selectedX, selectedY, x, y);
         }
         updateGUI();
-
         isSelected = false;
         int kingX = gameBoard.returnKingX(!turn);
         int kingY = gameBoard.returnKingY(!turn);
