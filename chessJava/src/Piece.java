@@ -4,7 +4,7 @@ public abstract class Piece {
 
     public boolean color; // true for white, false for black
     public boolean isFirstMove = true;
-    
+
     Piece(boolean color) {
         this.color = color;
     }
@@ -21,7 +21,7 @@ public abstract class Piece {
         this.color = color;
     }
 
-    public boolean isFirstMove(){
+    public boolean isFirstMove() {
         return isFirstMove;
     }
 
@@ -29,11 +29,11 @@ public abstract class Piece {
         this.isFirstMove = isFirstMove;
     }
 
-    public boolean isLeftCastlingPossible(Board currentBoard){
+    public boolean isLeftCastlingPossible(Board currentBoard) {
         return false;
     }
 
-    public boolean isRightCastlingPossible(Board currentBoard){
+    public boolean isRightCastlingPossible(Board currentBoard) {
         return false;
     }
 
@@ -43,10 +43,30 @@ public abstract class Piece {
             return true;
         }
         return false;
-
     }
 
     // return vector containing list of all possible moves at given point of time
     // int the form of xcoord*10 + ycoord
     abstract Vector<Integer> possibleMoves(Board currentBoard, int startX, int startY);
+
+    
+    public boolean equals(Piece x, Board thisBoard, Board xBoard, int posX, int posY) {
+        String thisName = this.getClass().getSimpleName();
+        String xName = x.getClass().getSimpleName();
+        if(!thisName.equals(xName)){
+            return false;
+        }
+        Vector<Integer> thisPiece = possibleMoves(thisBoard, posX, posY);
+        Vector<Integer> xPiece = x.possibleMoves(xBoard, posX, posY);
+        if(thisPiece.size()!=xPiece.size()){
+            return false;
+        }
+        for(int i = 0; i<thisPiece.size(); i++){
+            int pos = thisPiece.elementAt(i);
+            if(!xPiece.contains(pos)){
+                return false;
+            }
+        }
+        return true;
+    }
 }

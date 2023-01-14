@@ -10,6 +10,22 @@ public class Board {
         return board;
     }
 
+    public boolean equals(Board x) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (this.board[i][j] == null && x.board[i][j] == null) {
+                    continue;
+                } else if ((this.board[i][j] == null && x.board[i][j] != null)
+                        || this.board[i][j] != null && x.board[i][j] == null) {
+                    return false;
+                } else if (!this.board[i][j].equals(x.board[i][j], this, x, i, j)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     // update board when move is performed
     public void updateBoard(int startX, int startY, int endX, int endY) {
         if (board[startX][startY].getClass().getSimpleName().equals("Pawn")) {

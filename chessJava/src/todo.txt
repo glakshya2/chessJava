@@ -1,5 +1,3 @@
 1. center icons
 2. Implement pawn promotion
 3. implement enpassant
-4. use is stalemate and implement 3 move repeat condition for stalemate
-5. No stupid moves under check

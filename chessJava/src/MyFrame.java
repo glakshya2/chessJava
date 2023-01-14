@@ -9,6 +9,8 @@ public class MyFrame extends JFrame implements MouseListener {
 
     static Board gameBoard = new Board();
 
+    static Vector<Board> boardHistory = new Vector<Board>();
+
     // Returns true if king of given color is under check
     static boolean isCheck(Board currentBoard, int kingX, int kingY, boolean color) {
         int king = (kingX * 10) + kingY;
@@ -183,6 +185,16 @@ public class MyFrame extends JFrame implements MouseListener {
 
     // Returns true if game has reached Stale Mate
     static boolean isStaleMate(Board currentBoard, boolean color, int kingX, int kingY) {
+        int count = 0;
+        for(int i = boardHistory.size()-1; i>=0; i--){
+            Board tempBoard = boardHistory.elementAt(i);
+            if(tempBoard.equals(gameBoard)){
+                count++;
+            }
+        }
+        if(count>=3){
+            return true;
+        }
         if (!isCheck(currentBoard, kingX, kingY, currentBoard.board[kingX][kingY].color)) {
             return false;
         }
@@ -211,7 +223,8 @@ public class MyFrame extends JFrame implements MouseListener {
                 }
             }
         }
-        return true;
+        
+        return false;
     }
     JPanel mainPanel;
     JPanel panel;
@@ -506,6 +519,9 @@ public class MyFrame extends JFrame implements MouseListener {
         } else {
             gameBoard.updateBoard(selectedX, selectedY, x, y);
         }
+        Board tempBoard = new Board();
+        tempBoard.createCopy(gameBoard);
+        boardHistory.add(tempBoard);
         updateGUI();
         isSelected = false;
         int kingX = gameBoard.returnKingX(!turn);
@@ -520,12 +536,23 @@ public class MyFrame extends JFrame implements MouseListener {
                 gameBoard.set();
                 updateGUI();
                 turn = true;
+                boardHistory.clear();
             } else {
                 JOptionPane.showMessageDialog(frame, "Checkmate!, Black Wins");
                 gameBoard.set();
                 updateGUI();
                 turn = true;
+                boardHistory.clear();
             }
+        }
+        kingX = gameBoard.returnKingX(!turn);
+        kingY = gameBoard.returnKingY(!turn);
+        if(isStaleMate(gameBoard, !turn, kingX, kingY)){
+            JOptionPane.showMessageDialog(frame, "Stalemate");
+                gameBoard.set();
+                updateGUI();
+                turn = true;
+                boardHistory.clear();
         }
     }
 

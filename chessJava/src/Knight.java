@@ -5,7 +5,7 @@ public class Knight extends Piece {
     Knight(boolean color) {
         super(color);
     }
-
+    
     @Override
     boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY) {
         return super.isValidMove(currentBoard, startX, startY, endX, endY);
