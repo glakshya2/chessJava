@@ -1,2 +1,2 @@
 1. center icons
-2. Implement pawn promotion
+2. Incorporate pawn promotion into checkmate

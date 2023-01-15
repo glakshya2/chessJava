@@ -578,7 +578,7 @@ public class MyFrame extends JFrame implements MouseListener {
         }
 
         if (startX - endX == 1) {
-            if(startX-1<=0){
+            if (startX - 1 <= 0) {
                 if (currentBoard.board[startX - 1][startY] == null) {
                     return false;
                 }
@@ -628,20 +628,16 @@ public class MyFrame extends JFrame implements MouseListener {
         return true;
     }
 
+    public int pawnPromotion() {
+        String[] responses = { "Queen", "Bishop", "Knight", "Rook" };
+        int ans = JOptionPane.showOptionDialog(frame, "Promote Pawn to?", "Pawn Promotion",
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, responses, 0);
+        return ans;
+    }
+
     // Updates game state after making move
     public void updateGame(int x, int y) {
         clearHighlight();
-        int compNo = getCompNo(selectedX, selectedY);
-        int newCompNo = getCompNo(x, y);
-        String s = gameBoard.board[selectedX][selectedY].getClass().getSimpleName();
-        boolean color = gameBoard.board[selectedX][selectedY].color;
-        ImageIcon img = returnImg(s, color);
-
-        ((JPanel) mainPanel.getComponent(newCompNo)).removeAll();
-        ((JPanel) mainPanel.getComponent(newCompNo)).add(new JLabel(img));
-        ((JPanel) mainPanel.getComponent(compNo)).removeAll();
-        ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon()));
-
         if (isUserCastling(x, y)) {
             if (turn) {
                 if (x == 6) {
@@ -669,6 +665,37 @@ public class MyFrame extends JFrame implements MouseListener {
             }
         } else {
             gameBoard.updateBoard(selectedX, selectedY, x, y);
+        }
+        if (turn) {
+            if (y == 7) {
+                if (gameBoard.board[x][y].getClass().getSimpleName().equals("Pawn")) {
+                    int option = pawnPromotion();
+                    if (option == 0) {
+                        gameBoard.board[x][y] = new Queen(true);
+                    } else if (option == 1) {
+                        gameBoard.board[x][y] = new Bishop(true);
+                    } else if (option == 2) {
+                        gameBoard.board[x][y] = new Knight(true);
+                    } else if (option == 3) {
+                        gameBoard.board[x][y] = new Rook(true);
+                    }
+                }
+            }
+        } else {
+            if (y == 0) {
+                if (gameBoard.board[x][y].getClass().getSimpleName().equals("Pawn")) {
+                    int option = pawnPromotion();
+                    if (option == 0) {
+                        gameBoard.board[x][y] = new Queen(false);
+                    } else if (option == 1) {
+                        gameBoard.board[x][y] = new Bishop(false);
+                    } else if (option == 2) {
+                        gameBoard.board[x][y] = new Knight(false);
+                    } else if (option == 3) {
+                        gameBoard.board[x][y] = new Rook(false);
+                    }
+                }
+            }
         }
         Board tempBoard = new Board();
         tempBoard.createCopy(gameBoard);
