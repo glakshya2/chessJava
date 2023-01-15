@@ -1,3 +1,2 @@
 1. center icons
 2. Implement pawn promotion
-incorporate enpassant into checks for check and checkmate

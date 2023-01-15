@@ -183,7 +183,18 @@ public class MyFrame extends JFrame implements MouseListener {
                                 newKingX = possible.get(k) / 10;
                                 newKingY = possible.get(k) % 10;
                             }
+                            if (isThisEnpassant(tempBoard, i, j, possible.get(k) / 10, possible.get(k) % 10,
+                                    tempHistory)) {
+                                if (turn) {
+                                    tempBoard.setNull(possible.get(k) / 10, (possible.get(k) % 10) - 1);
+                                } else {
+                                    tempBoard.setNull(possible.get(k) / 10, (possible.get(k) % 10) + 1);
+                                }
+                            }
                             tempBoard.updateBoard(i, j, possible.get(k) / 10, possible.get(k) % 10);
+                            Board history = new Board();
+                            history.createCopy(tempBoard);
+                            tempHistory.add(history);
                             for (int l = 0; l < 8; l++) {
                                 for (int m = 0; m < 8; m++) {
                                     if (tempBoard.board[l][m] != null) {
@@ -542,7 +553,7 @@ public class MyFrame extends JFrame implements MouseListener {
         mainPanel.repaint();
     }
 
-    public boolean isThisEnpassant(Board currentBoard, int startX, int startY, int endX, int endY,
+    public static boolean isThisEnpassant(Board currentBoard, int startX, int startY, int endX, int endY,
             Vector<Board> currentHistory) {
         if (currentHistory.size() < 2) {
             return false;
@@ -565,20 +576,24 @@ public class MyFrame extends JFrame implements MouseListener {
         if (startX == endX) {
             return false;
         }
-        
+
         if (startX - endX == 1) {
-            if (currentBoard.board[startX - 1][startY] == null) {
-                return false;
-            }
-            if ((!currentBoard.board[startX - 1][startY].getClass().getSimpleName().equals("Pawn"))){
-                return false;
+            if(startX-1<=0){
+                if (currentBoard.board[startX - 1][startY] == null) {
+                    return false;
+                }
+                if ((!currentBoard.board[startX - 1][startY].getClass().getSimpleName().equals("Pawn"))) {
+                    return false;
+                }
             }
         } else {
-            if (currentBoard.board[startX + 1][startY] == null) {
-                return false;
-            }
-            if ((!currentBoard.board[startX + 1][startY].getClass().getSimpleName().equals("Pawn"))){
-                return false;
+            if (startX + 1 < 8) {
+                if (currentBoard.board[startX + 1][startY] == null) {
+                    return false;
+                }
+                if ((!currentBoard.board[startX + 1][startY].getClass().getSimpleName().equals("Pawn"))) {
+                    return false;
+                }
             }
         }
         Board tempBoard = new Board();
