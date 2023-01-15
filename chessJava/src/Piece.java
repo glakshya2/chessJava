@@ -29,16 +29,16 @@ public abstract class Piece {
         this.isFirstMove = isFirstMove;
     }
 
-    public boolean isLeftCastlingPossible(Board currentBoard) {
+    public boolean isLeftCastlingPossible(Board currentBoard, Vector<Board> boardHistory) {
         return false;
     }
 
-    public boolean isRightCastlingPossible(Board currentBoard) {
+    public boolean isRightCastlingPossible(Board currentBoard, Vector<Board> boardHistory) {
         return false;
     }
 
     // returns true if move provided is valid
-    boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY) {
+    boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY, Vector<Board> boardHistory) {
         if (currentBoard.board[endX][endY] == null || this.color != currentBoard.board[endX][endY].color) {
             return true;
         }
@@ -47,17 +47,17 @@ public abstract class Piece {
 
     // return vector containing list of all possible moves at given point of time
     // int the form of xcoord*10 + ycoord
-    abstract Vector<Integer> possibleMoves(Board currentBoard, int startX, int startY);
+    abstract Vector<Integer> possibleMoves(Board currentBoard, int startX, int startY, Vector<Board> boardHistory);
 
     
-    public boolean equals(Piece x, Board thisBoard, Board xBoard, int posX, int posY) {
+    public boolean equals(Piece x, Board thisBoard, Board xBoard, int posX, int posY, Vector<Board> boardHistory) {
         String thisName = this.getClass().getSimpleName();
         String xName = x.getClass().getSimpleName();
         if(!thisName.equals(xName)){
             return false;
         }
-        Vector<Integer> thisPiece = possibleMoves(thisBoard, posX, posY);
-        Vector<Integer> xPiece = x.possibleMoves(xBoard, posX, posY);
+        Vector<Integer> thisPiece = possibleMoves(thisBoard, posX, posY, boardHistory);
+        Vector<Integer> xPiece = x.possibleMoves(xBoard, posX, posY, boardHistory);
         if(thisPiece.size()!=xPiece.size()){
             return false;
         }
@@ -68,5 +68,9 @@ public abstract class Piece {
             }
         }
         return true;
+    }
+
+    public boolean isEnpassantPossible(Vector<Board> boardHistory, int startX, int startY, int direction){
+        return false;
     }
 }

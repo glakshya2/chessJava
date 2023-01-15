@@ -12,8 +12,8 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean isRightCastlingPossible(Board currentBoard) {
-        if (MyFrame.isCheck(currentBoard, currentBoard.returnKingX(color), currentBoard.returnKingY(color), color)) {
+    public boolean isRightCastlingPossible(Board currentBoard, Vector<Board> currentHistory) {
+        if (MyFrame.isCheck(currentBoard, currentBoard.returnKingX(color), currentBoard.returnKingY(color), color, currentHistory)) {
             return false;
         }
         if (color) {
@@ -36,7 +36,7 @@ public class King extends Piece {
                 return false;
             }
             if (currentBoard.board[5][0] == null && currentBoard.board[6][0] == null) {
-                if(!MyFrame.isCheck(currentBoard, 5, 0, color) && !MyFrame.isCheck(currentBoard, 6, 0, color)){
+                if(!MyFrame.isCheck(currentBoard, 5, 0, color, currentHistory) && !MyFrame.isCheck(currentBoard, 6, 0, color, currentHistory)){
                     return true;
                 }
             }
@@ -61,7 +61,7 @@ public class King extends Piece {
                 return false;
             }
             if (currentBoard.board[1][0] == null && currentBoard.board[2][0] == null) {
-                if(!MyFrame.isCheck(currentBoard, 1, 0, color) && !MyFrame.isCheck(currentBoard, 2, 0, color)){
+                if(!MyFrame.isCheck(currentBoard, 1, 0, color, currentHistory) && !MyFrame.isCheck(currentBoard, 2, 0, color, currentHistory)){
                     return true;
                 }
             }
@@ -70,8 +70,8 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean isLeftCastlingPossible(Board currentBoard){
-        if (MyFrame.isCheck(currentBoard, currentBoard.returnKingX(color), currentBoard.returnKingY(color), color)) {
+    public boolean isLeftCastlingPossible(Board currentBoard, Vector<Board> currentHistory){
+        if (MyFrame.isCheck(currentBoard, currentBoard.returnKingX(color), currentBoard.returnKingY(color), color, currentHistory)) {
             return false;
         }
         if (color) {
@@ -94,7 +94,7 @@ public class King extends Piece {
                 return false;
             }
             if (currentBoard.board[1][0] == null && currentBoard.board[2][0] == null && currentBoard.board[3][0]==null) {
-                if(!MyFrame.isCheck(currentBoard, 1, 0, color) && !MyFrame.isCheck(currentBoard, 2, 0, color) && !MyFrame.isCheck(currentBoard, 3, 0, color)){
+                if(!MyFrame.isCheck(currentBoard, 1, 0, color, currentHistory) && !MyFrame.isCheck(currentBoard, 2, 0, color, currentHistory) && !MyFrame.isCheck(currentBoard, 3, 0, color, currentHistory)){
                     return true;
                 }
             }
@@ -119,7 +119,7 @@ public class King extends Piece {
                 return false;
             }
             if (currentBoard.board[4][0] == null && currentBoard.board[5][0] == null && currentBoard.board[6][0] == null) {
-                if(!MyFrame.isCheck(currentBoard, 4, 0, color) && !MyFrame.isCheck(currentBoard, 5, 0, color) && !MyFrame.isCheck(currentBoard, 6, 0, color)){
+                if(!MyFrame.isCheck(currentBoard, 4, 0, color, currentHistory) && !MyFrame.isCheck(currentBoard, 5, 0, color, currentHistory) && !MyFrame.isCheck(currentBoard, 6, 0, color, currentHistory)){
                     return true;
                 }
             }
@@ -128,13 +128,13 @@ public class King extends Piece {
     }
 
     @Override
-    boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY) {
+    boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY, Vector<Board> currentHistory) {
 
-        if (MyFrame.isCheck(currentBoard, endX, endY, color)) {
+        if (MyFrame.isCheck(currentBoard, endX, endY, color, currentHistory)) {
             return false;
         }
 
-        boolean valid = super.isValidMove(currentBoard, startX, startY, endX, endY);
+        boolean valid = super.isValidMove(currentBoard, startX, startY, endX, endY, currentHistory);
 
         if (endX + 1 < 8 && endX + 1 != startX) {
             if (currentBoard.board[endX + 1][endY] != null) {
@@ -195,57 +195,57 @@ public class King extends Piece {
         return valid;
     }
 
-    Vector<Integer> possibleMoves(Board currentBoard, int startX, int startY) {
+    Vector<Integer> possibleMoves(Board currentBoard, int startX, int startY, Vector<Board> boardHistory) {
         Vector<Integer> list = new Vector<Integer>();
         if (startY + 1 < 8) {
-            if (isValidMove(currentBoard, startX, startY, startX, startY + 1)) {
+            if (isValidMove(currentBoard, startX, startY, startX, startY + 1, boardHistory)) {
                 list.add((startX * 10) + (startY + 1));
             }
         }
         if (startY - 1 >= 0) {
-            if (isValidMove(currentBoard, startX, startY, startX, startY - 1)) {
+            if (isValidMove(currentBoard, startX, startY, startX, startY - 1, boardHistory)) {
                 list.add((startX * 10) + (startY - 1));
             }
         }
         if (startX + 1 < 8) {
-            if (isValidMove(currentBoard, startX, startY, startX + 1, startY)) {
+            if (isValidMove(currentBoard, startX, startY, startX + 1, startY, boardHistory)) {
                 list.add(((startX + 1) * 10) + startY);
             }
         }
         if (startX - 1 >= 0) {
-            if (isValidMove(currentBoard, startX, startY, startX - 1, startY)) {
+            if (isValidMove(currentBoard, startX, startY, startX - 1, startY, boardHistory)) {
                 list.add(((startX - 1) * 10) + startY);
             }
         }
         if (startX + 1 < 8 && startY + 1 < 8) {
-            if (isValidMove(currentBoard, startX, startY, startX + 1, startY + 1)) {
+            if (isValidMove(currentBoard, startX, startY, startX + 1, startY + 1, boardHistory)) {
                 list.add(((startX + 1) * 10) + (startY + 1));
             }
         }
         if (startX - 1 >= 0 && startY + 1 < 8) {
-            if (isValidMove(currentBoard, startX, startY, startX - 1, startY + 1)) {
+            if (isValidMove(currentBoard, startX, startY, startX - 1, startY + 1, boardHistory)) {
                 list.add(((startX - 1) * 10) + (startY + 1));
 
             }
         }
         if (startX + 1 < 8 && startY - 1 >= 0) {
-            if (isValidMove(currentBoard, startX, startY, startX + 1, startY - 1)) {
+            if (isValidMove(currentBoard, startX, startY, startX + 1, startY - 1, boardHistory)) {
                 list.add(((startX + 1) * 10) + (startY - 1));
             }
         }
         if (startX - 1 >= 0 && startY - 1 >= 0) {
-            if (isValidMove(currentBoard, startX, startY, startX - 1, startY - 1)) {
+            if (isValidMove(currentBoard, startX, startY, startX - 1, startY - 1, boardHistory)) {
                 list.add(((startX - 1) * 10) + (startY - 1));
             }
         }
-        if(isLeftCastlingPossible(currentBoard)){
+        if(isLeftCastlingPossible(currentBoard, boardHistory)){
             if(color){
                 list.add(20);
             } else {
                 list.add(50);
             }
         }
-        if(isRightCastlingPossible(currentBoard)){
+        if(isRightCastlingPossible(currentBoard, boardHistory)){
             if(color){
                 list.add(60);
             } else {

@@ -12,7 +12,7 @@ public class Rook extends Piece {
     }
 
     @Override
-    boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY) {
+    boolean isValidMove(Board currentBoard, int startX, int startY, int endX, int endY, Vector<Board> boardHistory) {
         if (currentBoard.board[endX][endY] != null) {
             if (this.color == currentBoard.board[endX][endY].color) {
                 return false;
@@ -58,10 +58,10 @@ public class Rook extends Piece {
         return true;
     }
 
-    Vector<Integer> possibleMoves(Board currentBoard, int startX, int startY) {
+    Vector<Integer> possibleMoves(Board currentBoard, int startX, int startY, Vector<Board> boardHistory) {
         Vector<Integer> list = new Vector<Integer>();
         for (int i = startY + 1; i < 8; i++) {
-            if (isValidMove(currentBoard, startX, startY, startX, i)) {
+            if (isValidMove(currentBoard, startX, startY, startX, i, boardHistory)) {
                 list.add((startX * 10) + i);
                 if (currentBoard.board[startX][i] != null) {
                     break;
@@ -71,7 +71,7 @@ public class Rook extends Piece {
             }
         }
         for (int i = startY - 1; i >= 0; i--) {
-            if (isValidMove(currentBoard, startX, startY, startX, i)) {
+            if (isValidMove(currentBoard, startX, startY, startX, i, boardHistory)) {
                 list.add((startX * 10) + i);
                 if (currentBoard.board[startX][i] != null) {
                     break;
@@ -81,7 +81,7 @@ public class Rook extends Piece {
             }
         }
         for (int i = startX + 1; i < 8; i++) {
-            if (isValidMove(currentBoard, startX, startY, i, startY)) {
+            if (isValidMove(currentBoard, startX, startY, i, startY, boardHistory)) {
                 list.add((i * 10) + startY);
                 if (currentBoard.board[i][startY] != null) {
                     break;
@@ -91,7 +91,7 @@ public class Rook extends Piece {
             }
         }
         for (int i = startX - 1; i >= 0; i--) {
-            if (isValidMove(currentBoard, startX, startY, i, startY)) {
+            if (isValidMove(currentBoard, startX, startY, i, startY, boardHistory)) {
                 list.add((i * 10) + startY);
                 if (currentBoard.board[i][startY] != null) {
                     break;

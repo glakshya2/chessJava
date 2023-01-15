@@ -1,3 +1,4 @@
+import java.util.Vector;
 public class Board {
 
     public Piece[][] board = new Piece[8][8];
@@ -10,7 +11,7 @@ public class Board {
         return board;
     }
 
-    public boolean equals(Board x) {
+    public boolean equals(Board x, Vector<Board> boardHistory) {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (this.board[i][j] == null && x.board[i][j] == null) {
@@ -18,7 +19,7 @@ public class Board {
                 } else if ((this.board[i][j] == null && x.board[i][j] != null)
                         || this.board[i][j] != null && x.board[i][j] == null) {
                     return false;
-                } else if (!this.board[i][j].equals(x.board[i][j], this, x, i, j)) {
+                } else if (!this.board[i][j].equals(x.board[i][j], this, x, i, j, boardHistory)) {
                     return false;
                 }
             }
@@ -28,17 +29,16 @@ public class Board {
 
     // update board when move is performed
     public void updateBoard(int startX, int startY, int endX, int endY) {
-        if (board[startX][startY].getClass().getSimpleName().equals("Pawn")) {
-            board[startX][startY].updateFirstMove();
-        } else if (board[startX][startY].getClass().getSimpleName().equals("King")) {
-            board[startX][startY].updateFirstMove();
-        } else if (board[startX][startY].getClass().getSimpleName().equals("Rook")) {
-            board[startX][startY].updateFirstMove();
-        }
+        board[startX][startY].updateFirstMove();
         board[endX][endY] = board[startX][startY];
         board[startX][startY] = null;
     }
 
+
+    public void setNull(int posX, int posY){
+        board[posX][posY] = null;
+    }
+    
     // Returns a flipped board for calculation of possible moves of black pieces
     public Piece[][] flipBoard() {
         Piece[][] flipped = new Piece[8][8];
@@ -103,13 +103,7 @@ public class Board {
             for (int j = 0; j < 8; j++) {
                 if (x.board[i][j] != null) {
                     board[i][j] = returnPiece(x.board[i][j].getClass().getSimpleName(), x.board[i][j].isColor());
-                    if (board[i][j].getClass().getSimpleName().equals("Pawn")) {
-                        board[i][j].setFirstMove(x.board[i][j].isFirstMove());
-                    } else if (board[i][j].getClass().getSimpleName().equals("King")) {
-                        board[i][j].setFirstMove(x.board[i][j].isFirstMove());
-                    } else if (board[i][j].getClass().getSimpleName().equals("Rook")) {
-                        board[i][j].setFirstMove(x.board[i][j].isFirstMove());
-                    }
+                    board[i][j].setFirstMove(x.board[i][j].isFirstMove());
                 } else {
                     board[i][j] = null;
                 }
@@ -142,7 +136,7 @@ public class Board {
             board[i][6] = new Pawn(false);
         }
         for (int i = 0; i < 8; i++) {
-            for (int j = 3; j < 6; j++) {
+            for (int j = 2; j < 6; j++) {
                 board[i][j] = null;
             }
         }
