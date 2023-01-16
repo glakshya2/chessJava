@@ -1,2 +1,2 @@
 1. center icons
-2. Incorporate pawn promotion into checkmate
+2. Clean up code
