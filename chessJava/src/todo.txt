@@ -1,2 +1,1 @@
-1. center icons
-2. Clean up code
+1. Clean up code
