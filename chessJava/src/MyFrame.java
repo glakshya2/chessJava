@@ -57,8 +57,8 @@ public class MyFrame extends JFrame implements MouseListener {
                             list = temp.board[i][j].possibleMoves(newBoard, 7 - i, 7 - j, tempHistory);
                             tempHistory = deepCopy(currentHistory);
                             for (int k = 0; k < list.size(); k++) {
-                                int listX = 7 - (list.get(k) / 10);
-                                int listY = 7 - (list.get(k) % 10);
+                                int listX = 7 - (list.elementAt(k) / 10);
+                                int listY = 7 - (list.elementAt(k) % 10);
                                 list.set(k, ((listX * 10) + listY));
                             }
                         }
@@ -97,8 +97,8 @@ public class MyFrame extends JFrame implements MouseListener {
                             list1 = tempBoard.board[i][j].possibleMoves(newBoard, 7 - i, 7 - j, tempHistory);
                             tempHistory = deepCopy(currentHistory);
                             for (int k = 0; k < list1.size(); k++) {
-                                int listX = 7 - (list1.get(k) / 10);
-                                int listY = 7 - (list1.get(k) % 10);
+                                int listX = 7 - (list1.elementAt(k) / 10);
+                                int listY = 7 - (list1.elementAt(k) % 10);
                                 list1.set(k, ((listX * 10) + listY));
                             }
                         }
@@ -136,18 +136,38 @@ public class MyFrame extends JFrame implements MouseListener {
             tempBoard.createCopy(currentBoard);
             tempHistory = deepCopy(currentHistory);
             for (int k = 0; k < list.size(); k++) {
-                int listX = 7 - (list.get(k) / 10);
-                int listY = 7 - (list.get(k) % 10);
+                int listX = 7 - (list.elementAt(k) / 10);
+                int listY = 7 - (list.elementAt(k) % 10);
                 list.set(k, ((listX * 10) + listY));
             }
         }
         if (list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
-                tempBoard.updateBoard(kingX, kingY, list.get(i) / 10, list.get(i) % 10);
+                if (isUserCastling(list.elementAt(i) / 10, list.elementAt(i) % 10)) {
+                    if (turn) {
+                        if (list.elementAt(i) / 10 == 6) {
+                            tempBoard.updateBoard(4, 0, 6, 0);
+                            tempBoard.updateBoard(7, 0, 5, 0);
+                        } else if (list.elementAt(i) / 10 == 2) {
+                            tempBoard.updateBoard(4, 0, 2, 0);
+                            tempBoard.updateBoard(0, 0, 3, 0);
+                        }
+                    } else {
+                        if (list.elementAt(i) / 10 == 6) {
+                            tempBoard.updateBoard(4, 7, 6, 7);
+                            tempBoard.updateBoard(7, 7, 5, 7);
+                        } else if (list.elementAt(i) / 10 == 2) {
+                            tempBoard.updateBoard(4, 7, 2, 7);
+                            tempBoard.updateBoard(0, 7, 3, 7);
+                        }
+                    }
+                } else {
+                    tempBoard.updateBoard(kingX, kingY, list.elementAt(i) / 10, list.elementAt(i) % 10);
+                }
                 Board newBoard = new Board();
                 newBoard.createCopy(tempBoard);
                 tempHistory.add(newBoard);
-                if (!isCheck(tempBoard, list.get(i) / 10, list.get(i) % 10, color, tempHistory)) {
+                if (!isCheck(tempBoard, list.elementAt(i) / 10, list.elementAt(i) % 10, color, tempHistory)) {
                     tempBoard.createCopy(currentBoard);
                     return false;
                 }
@@ -173,62 +193,284 @@ public class MyFrame extends JFrame implements MouseListener {
                             possible = tempBoard.board[i][j].possibleMoves(newBoard, 7 - i, 7 - j, tempHistory);
                             tempHistory = deepCopy(currentHistory);
                             for (int k = 0; k < list.size(); k++) {
-                                int listX = 7 - (list.get(k) / 10);
-                                int listY = 7 - (list.get(k) % 10);
+                                int listX = 7 - (list.elementAt(k) / 10);
+                                int listY = 7 - (list.elementAt(k) % 10);
                                 list.set(k, ((listX * 10) + listY));
                             }
                         }
                         for (int k = 0; k < possible.size(); k++) {
-                            if (i == kingX && j == kingY) {
-                                newKingX = possible.get(k) / 10;
-                                newKingY = possible.get(k) % 10;
-                            }
-                            if (isThisEnpassant(tempBoard, i, j, possible.get(k) / 10, possible.get(k) % 10,
-                                    tempHistory)) {
-                                if (turn) {
-                                    tempBoard.setNull(possible.get(k) / 10, (possible.get(k) % 10) - 1);
+                            if (!tempBoard.board[i][j].getClass().getSimpleName().equals("Pawn")) {
+                                if (isUserCastling(possible.elementAt(k) / 10, possible.elementAt(k) % 10)) {
+                                    if (turn) {
+                                        if (possible.elementAt(k) / 10 == 6) {
+                                            tempBoard.updateBoard(4, 0, 6, 0);
+                                            tempBoard.updateBoard(7, 0, 5, 0);
+                                        } else if (possible.elementAt(k) / 10 == 2) {
+                                            tempBoard.updateBoard(4, 0, 2, 0);
+                                            tempBoard.updateBoard(0, 0, 3, 0);
+                                        }
+                                    } else {
+                                        if (possible.elementAt(k) / 10 == 6) {
+                                            tempBoard.updateBoard(4, 7, 6, 7);
+                                            tempBoard.updateBoard(7, 7, 5, 7);
+                                        } else if (list.elementAt(k) / 10 == 2) {
+                                            tempBoard.updateBoard(4, 7, 2, 7);
+                                            tempBoard.updateBoard(0, 7, 3, 7);
+                                        }
+                                    }
                                 } else {
-                                    tempBoard.setNull(possible.get(k) / 10, (possible.get(k) % 10) + 1);
+                                    tempBoard.updateBoard(i, j, possible.elementAt(k) / 10, possible.elementAt(k) % 10);
                                 }
-                            }
-                            tempBoard.updateBoard(i, j, possible.get(k) / 10, possible.get(k) % 10);
-                            Board history = new Board();
-                            history.createCopy(tempBoard);
-                            tempHistory.add(history);
-                            for (int l = 0; l < 8; l++) {
-                                for (int m = 0; m < 8; m++) {
-                                    if (tempBoard.board[l][m] != null) {
-                                        if (tempBoard.board[l][m].color != color) {
-                                            Vector<Integer> possible2 = new Vector<Integer>();
-                                            if (tempBoard.board[l][m].color) {
-                                                possible2 = tempBoard.board[l][m]
-                                                        .possibleMoves(tempBoard, l, m, tempHistory);
-                                            } else {
-                                                Board newBoard = new Board();
-                                                newBoard.createCopy(tempBoard);
-                                                newBoard.setBoard(newBoard.flipBoard());
-                                                Board temp = new Board();
-                                                temp.createCopy(newBoard);
-                                                tempHistory = flipHistoryVector(tempHistory);
-                                                tempHistory.add(temp);
-                                                possible2 = tempBoard.board[l][m].possibleMoves(newBoard, 7 - l, 7 - m,
-                                                        tempHistory);
-                                                tempHistory = deepCopy(currentHistory);
-                                                for (int n = 0; n < list.size(); n++) {
-                                                    int listX = 7 - (list.get(n) / 10);
-                                                    int listY = 7 - (list.get(n) % 10);
-                                                    list.set(n, ((listX * 10) + listY));
+                                if (i == kingX && j == kingY) {
+                                    newKingX = possible.elementAt(k) / 10;
+                                    newKingY = possible.elementAt(k) % 10;
+                                }
+                                Board history = new Board();
+                                history.createCopy(tempBoard);
+                                tempHistory.add(history);
+                                for (int l = 0; l < 8; l++) {
+                                    for (int m = 0; m < 8; m++) {
+                                        if (tempBoard.board[l][m] != null) {
+                                            if (tempBoard.board[l][m].color != color) {
+                                                Vector<Integer> possible2 = new Vector<Integer>();
+                                                if (tempBoard.board[l][m].color) {
+                                                    possible2 = tempBoard.board[l][m]
+                                                            .possibleMoves(tempBoard, l, m, tempHistory);
+                                                } else {
+                                                    Board newBoard = new Board();
+                                                    newBoard.createCopy(tempBoard);
+                                                    newBoard.setBoard(newBoard.flipBoard());
+                                                    Board temp = new Board();
+                                                    temp.createCopy(newBoard);
+                                                    tempHistory = flipHistoryVector(tempHistory);
+                                                    tempHistory.add(temp);
+                                                    possible2 = tempBoard.board[l][m].possibleMoves(newBoard, 7 - l,
+                                                            7 - m,
+                                                            tempHistory);
+                                                    tempHistory = deepCopy(currentHistory);
+                                                    for (int n = 0; n < list.size(); n++) {
+                                                        int listX = 7 - (list.elementAt(n) / 10);
+                                                        int listY = 7 - (list.elementAt(n) % 10);
+                                                        list.set(n, ((listX * 10) + listY));
+                                                    }
                                                 }
-                                            }
-                                            if (possible2.contains((newKingX * 10) + newKingY)) {
-                                                evadable = false;
+                                                if (possible2.contains((newKingX * 10) + newKingY)) {
+                                                    evadable = false;
+                                                }
                                             }
                                         }
                                     }
                                 }
+                                tempBoard.createCopy(gameBoard);
+                                tempHistory = deepCopy(currentHistory);
+                            } else if (isThisEnpassant(tempBoard, i, j, possible.elementAt(k) / 10,
+                                    possible.elementAt(k) % 10,
+                                    tempHistory)) {
+                                if (turn) {
+                                    tempBoard.setNull(possible.elementAt(k) / 10, (possible.elementAt(k) % 10) - 1);
+                                } else {
+                                    tempBoard.setNull(possible.elementAt(k) / 10, (possible.elementAt(k) % 10) + 1);
+                                }
+                                tempBoard.updateBoard(i, j, possible.elementAt(k) / 10, possible.elementAt(k) % 10);
+                                Board history = new Board();
+                                history.createCopy(tempBoard);
+                                tempHistory.add(history);
+                                for (int l = 0; l < 8; l++) {
+                                    for (int m = 0; m < 8; m++) {
+                                        if (tempBoard.board[l][m] != null) {
+                                            if (tempBoard.board[l][m].color != color) {
+                                                Vector<Integer> possible2 = new Vector<Integer>();
+                                                if (tempBoard.board[l][m].color) {
+                                                    possible2 = tempBoard.board[l][m]
+                                                            .possibleMoves(tempBoard, l, m, tempHistory);
+                                                } else {
+                                                    Board newBoard = new Board();
+                                                    newBoard.createCopy(tempBoard);
+                                                    newBoard.setBoard(newBoard.flipBoard());
+                                                    Board temp = new Board();
+                                                    temp.createCopy(newBoard);
+                                                    tempHistory = flipHistoryVector(tempHistory);
+                                                    tempHistory.add(temp);
+                                                    possible2 = tempBoard.board[l][m].possibleMoves(newBoard, 7 - l,
+                                                            7 - m,
+                                                            tempHistory);
+                                                    tempHistory = deepCopy(currentHistory);
+                                                    for (int n = 0; n < list.size(); n++) {
+                                                        int listX = 7 - (list.elementAt(n) / 10);
+                                                        int listY = 7 - (list.elementAt(n) % 10);
+                                                        list.set(n, ((listX * 10) + listY));
+                                                    }
+                                                }
+                                                if (possible2.contains((newKingX * 10) + newKingY)) {
+                                                    evadable = false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                tempBoard.createCopy(gameBoard);
+                                tempHistory = deepCopy(currentHistory);
+                            } else if ((turn && possible.elementAt(k) % 10 == 7)
+                                    || ((!turn) && possible.elementAt(k) % 10 == 0)) {
+                                tempBoard.updateBoard(i, j, possible.elementAt(k) / 10, possible.elementAt(k) % 10);
+                                tempBoard.board[possible.elementAt(k) / 10][possible.elementAt(k) % 10] = new Queen(
+                                        tempBoard.board[possible.elementAt(k) / 10][possible.elementAt(k) % 10].color);
+                                Board history = new Board();
+                                history.createCopy(tempBoard);
+                                tempHistory.add(history);
+                                for (int l = 0; l < 8; l++) {
+                                    for (int m = 0; m < 8; m++) {
+                                        if (tempBoard.board[l][m] != null) {
+                                            if (tempBoard.board[l][m].color != color) {
+                                                Vector<Integer> possible2 = new Vector<Integer>();
+                                                if (tempBoard.board[l][m].color) {
+                                                    possible2 = tempBoard.board[l][m]
+                                                            .possibleMoves(tempBoard, l, m, tempHistory);
+                                                } else {
+                                                    Board newBoard = new Board();
+                                                    newBoard.createCopy(tempBoard);
+                                                    newBoard.setBoard(newBoard.flipBoard());
+                                                    Board temp = new Board();
+                                                    temp.createCopy(newBoard);
+                                                    tempHistory = flipHistoryVector(tempHistory);
+                                                    tempHistory.add(temp);
+                                                    possible2 = tempBoard.board[l][m].possibleMoves(newBoard, 7 - l,
+                                                            7 - m,
+                                                            tempHistory);
+                                                    tempHistory = deepCopy(currentHistory);
+                                                    for (int n = 0; n < list.size(); n++) {
+                                                        int listX = 7 - (list.elementAt(n) / 10);
+                                                        int listY = 7 - (list.elementAt(n) % 10);
+                                                        list.set(n, ((listX * 10) + listY));
+                                                    }
+                                                }
+                                                if (possible2.contains((newKingX * 10) + newKingY)) {
+                                                    evadable = false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                tempBoard.createCopy(gameBoard);
+                                tempHistory = deepCopy(currentHistory);
+                                tempBoard.board[possible.elementAt(k) / 10][possible.elementAt(k) % 10] = new Rook(
+                                        tempBoard.board[possible.elementAt(k) / 10][possible.elementAt(k) % 10].color);
+                                history.createCopy(tempBoard);
+                                tempHistory.add(history);
+                                for (int l = 0; l < 8; l++) {
+                                    for (int m = 0; m < 8; m++) {
+                                        if (tempBoard.board[l][m] != null) {
+                                            if (tempBoard.board[l][m].color != color) {
+                                                Vector<Integer> possible2 = new Vector<Integer>();
+                                                if (tempBoard.board[l][m].color) {
+                                                    possible2 = tempBoard.board[l][m]
+                                                            .possibleMoves(tempBoard, l, m, tempHistory);
+                                                } else {
+                                                    Board newBoard = new Board();
+                                                    newBoard.createCopy(tempBoard);
+                                                    newBoard.setBoard(newBoard.flipBoard());
+                                                    Board temp = new Board();
+                                                    temp.createCopy(newBoard);
+                                                    tempHistory = flipHistoryVector(tempHistory);
+                                                    tempHistory.add(temp);
+                                                    possible2 = tempBoard.board[l][m].possibleMoves(newBoard, 7 - l,
+                                                            7 - m,
+                                                            tempHistory);
+                                                    tempHistory = deepCopy(currentHistory);
+                                                    for (int n = 0; n < list.size(); n++) {
+                                                        int listX = 7 - (list.elementAt(n) / 10);
+                                                        int listY = 7 - (list.elementAt(n) % 10);
+                                                        list.set(n, ((listX * 10) + listY));
+                                                    }
+                                                }
+                                                if (possible2.contains((newKingX * 10) + newKingY)) {
+                                                    evadable = false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                tempBoard.createCopy(gameBoard);
+                                tempHistory = deepCopy(currentHistory);
+                                tempBoard.board[possible.elementAt(k) / 10][possible.elementAt(k) % 10] = new Bishop(
+                                        tempBoard.board[possible.elementAt(k) / 10][possible.elementAt(k) % 10].color);
+                                history.createCopy(tempBoard);
+                                tempHistory.add(history);
+                                for (int l = 0; l < 8; l++) {
+                                    for (int m = 0; m < 8; m++) {
+                                        if (tempBoard.board[l][m] != null) {
+                                            if (tempBoard.board[l][m].color != color) {
+                                                Vector<Integer> possible2 = new Vector<Integer>();
+                                                if (tempBoard.board[l][m].color) {
+                                                    possible2 = tempBoard.board[l][m]
+                                                            .possibleMoves(tempBoard, l, m, tempHistory);
+                                                } else {
+                                                    Board newBoard = new Board();
+                                                    newBoard.createCopy(tempBoard);
+                                                    newBoard.setBoard(newBoard.flipBoard());
+                                                    Board temp = new Board();
+                                                    temp.createCopy(newBoard);
+                                                    tempHistory = flipHistoryVector(tempHistory);
+                                                    tempHistory.add(temp);
+                                                    possible2 = tempBoard.board[l][m].possibleMoves(newBoard, 7 - l,
+                                                            7 - m,
+                                                            tempHistory);
+                                                    tempHistory = deepCopy(currentHistory);
+                                                    for (int n = 0; n < list.size(); n++) {
+                                                        int listX = 7 - (list.elementAt(n) / 10);
+                                                        int listY = 7 - (list.elementAt(n) % 10);
+                                                        list.set(n, ((listX * 10) + listY));
+                                                    }
+                                                }
+                                                if (possible2.contains((newKingX * 10) + newKingY)) {
+                                                    evadable = false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                tempBoard.createCopy(gameBoard);
+                                tempHistory = deepCopy(currentHistory);
+                                tempBoard.board[possible.elementAt(k) / 10][possible.elementAt(k) % 10] = new Knight(
+                                        tempBoard.board[possible.elementAt(k) / 10][possible.elementAt(k) % 10].color);
+                                history.createCopy(tempBoard);
+                                tempHistory.add(history);
+                                for (int l = 0; l < 8; l++) {
+                                    for (int m = 0; m < 8; m++) {
+                                        if (tempBoard.board[l][m] != null) {
+                                            if (tempBoard.board[l][m].color != color) {
+                                                Vector<Integer> possible2 = new Vector<Integer>();
+                                                if (tempBoard.board[l][m].color) {
+                                                    possible2 = tempBoard.board[l][m]
+                                                            .possibleMoves(tempBoard, l, m, tempHistory);
+                                                } else {
+                                                    Board newBoard = new Board();
+                                                    newBoard.createCopy(tempBoard);
+                                                    newBoard.setBoard(newBoard.flipBoard());
+                                                    Board temp = new Board();
+                                                    temp.createCopy(newBoard);
+                                                    tempHistory = flipHistoryVector(tempHistory);
+                                                    tempHistory.add(temp);
+                                                    possible2 = tempBoard.board[l][m].possibleMoves(newBoard, 7 - l,
+                                                            7 - m,
+                                                            tempHistory);
+                                                    tempHistory = deepCopy(currentHistory);
+                                                    for (int n = 0; n < list.size(); n++) {
+                                                        int listX = 7 - (list.elementAt(n) / 10);
+                                                        int listY = 7 - (list.elementAt(n) % 10);
+                                                        list.set(n, ((listX * 10) + listY));
+                                                    }
+                                                }
+                                                if (possible2.contains((newKingX * 10) + newKingY)) {
+                                                    evadable = false;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                tempBoard.createCopy(gameBoard);
+                                tempHistory = deepCopy(currentHistory);
                             }
-                            tempBoard.createCopy(gameBoard);
-                            tempHistory = deepCopy(currentHistory);
                         }
                     }
                 }
@@ -271,8 +513,8 @@ public class MyFrame extends JFrame implements MouseListener {
                             list = currentBoard.board[i][j].possibleMoves(newBoard, 7 - i, 7 - j, tempHistory);
                             tempHistory = deepCopy(currentHistory);
                             for (int k = 0; k < list.size(); k++) {
-                                int listX = 7 - (list.get(k) / 10);
-                                int listY = 7 - (list.get(k) % 10);
+                                int listX = 7 - (list.elementAt(k) / 10);
+                                int listY = 7 - (list.elementAt(k) % 10);
                                 list.set(k, ((listX * 10) + listY));
                             }
                         }
@@ -474,8 +716,8 @@ public class MyFrame extends JFrame implements MouseListener {
             Vector<Board> tempHistory = flipHistoryVector(boardHistory);
             list = gameBoard.board[x][y].possibleMoves(newBoard, 7 - x, 7 - y, tempHistory);
             for (int k = 0; k < list.size(); k++) {
-                int listX = 7 - (list.get(k) / 10);
-                int listY = 7 - (list.get(k) % 10);
+                int listX = 7 - (list.elementAt(k) / 10);
+                int listY = 7 - (list.elementAt(k) % 10);
                 list.set(k, ((listX * 10) + listY));
             }
         }
@@ -483,8 +725,8 @@ public class MyFrame extends JFrame implements MouseListener {
             int position = -1;
             boolean found = false;
             for (int i = 0; i < list.size(); i++) {
-                if (list.get(i) / 10 == gameBoard.returnKingX(!turn)
-                        && list.get(i) % 10 == gameBoard.returnKingY(!turn)) {
+                if (list.elementAt(i) / 10 == gameBoard.returnKingX(!turn)
+                        && list.elementAt(i) % 10 == gameBoard.returnKingY(!turn)) {
                     position = i;
                     found = true;
                     break;
@@ -497,12 +739,12 @@ public class MyFrame extends JFrame implements MouseListener {
         if (isCheck(gameBoard, gameBoard.returnKingX(turn), gameBoard.returnKingY(turn), turn, boardHistory)) {
             Vector<Integer> indices = new Vector<Integer>();
             for (int i = 0; i < list.size(); i++) {
-                if (!isNotStupid(gameBoard, x, y, list.get(i) / 10, list.get(i) % 10)) {
+                if (!isNotStupid(gameBoard, x, y, list.elementAt(i) / 10, list.elementAt(i) % 10)) {
                     indices.add(i);
                 }
             }
             for (int i = indices.size() - 1; i > -1; i--) {
-                int z = indices.get(i);
+                int z = indices.elementAt(i);
                 list.remove(z);
             }
         }
@@ -780,7 +1022,7 @@ public class MyFrame extends JFrame implements MouseListener {
         // Not Needed
     }
 
-    public boolean isUserCastling(int x, int y) {
+    public static boolean isUserCastling(int x, int y) {
         if (turn) {
             if (gameBoard.board[gameBoard.returnKingX(turn)][gameBoard.returnKingY(turn)]
                     .isLeftCastlingPossible(gameBoard, boardHistory)
