@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.border.Border;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
@@ -576,21 +578,7 @@ public class MyFrame extends JFrame implements MouseListener {
             mainPanel.add(panel, n);
             n++;
         }
-
-        for (int i = 0; i < 16; i++) {
-            ((JPanel) mainPanel.getComponent(i)).remove(0);
-            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
-            boolean color = gameBoard.board[getX(i)][getY(i)].color;
-            ImageIcon img = returnImg(s, color);
-            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
-        }
-        for (int i = 48; i < 64; i++) {
-            ((JPanel) mainPanel.getComponent(i)).remove(0);
-            String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
-            boolean color = gameBoard.board[getX(i)][getY(i)].color;
-            ImageIcon img = returnImg(s, color);
-            ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
-        }
+        updateGUI();
         frame.add(mainPanel, BorderLayout.CENTER);
         frame.setSize(640, 640);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -647,17 +635,7 @@ public class MyFrame extends JFrame implements MouseListener {
     // Removes all yellow dots used for highlighting possible moves from GUI
     public void clearHighlight() {
         for (int i = 0; i < highlighted.size(); i++) {
-            if (gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))] != null) {
-                String s = gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))].getClass()
-                        .getSimpleName();
-                boolean color = gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))].color;
-                ImageIcon img = returnImg(s, color);
-                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).removeAll();
-                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).add(new JLabel(img));
-            } else {
-                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).removeAll();
-                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).add(new JLabel(new ImageIcon()));
-            }
+            ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).setBorder(null);
         }
         mainPanel.validate();
         mainPanel.repaint();
@@ -754,18 +732,8 @@ public class MyFrame extends JFrame implements MouseListener {
             int compNo;
             compNo = getCompNo(listX, listY);
             highlighted.add(compNo);
-            if (gameBoard.board[listX][listY] != null) {
-                String s = gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))].getClass()
-                        .getSimpleName();
-                boolean color = gameBoard.board[getX(highlighted.elementAt(i))][getY(highlighted.elementAt(i))].color;
-                ImageIcon img = returnImg(s, color);
-                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).removeAll();
-                ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon("images/YellowDot.png")));
-                ((JPanel) mainPanel.getComponent(highlighted.elementAt(i))).add(new JLabel(img));
-            } else {
-                ((JPanel) mainPanel.getComponent(compNo)).removeAll();
-                ((JPanel) mainPanel.getComponent(compNo)).add(new JLabel(new ImageIcon("images/YellowDot.png")));
-            }
+            Border border = BorderFactory.createLineBorder(Color.RED, 3);
+            ((JPanel) mainPanel.getComponent(compNo)).setBorder(border);
         }
         mainPanel.validate();
         mainPanel.repaint();
@@ -788,7 +756,8 @@ public class MyFrame extends JFrame implements MouseListener {
                 String s = gameBoard.board[getX(i)][getY(i)].getClass().getSimpleName();
                 boolean color = gameBoard.board[getX(i)][getY(i)].color;
                 ImageIcon img = returnImg(s, color);
-                ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img));
+                ((JPanel) mainPanel.getComponent(i)).setLayout(new BorderLayout());
+                ((JPanel) mainPanel.getComponent(i)).add(new JLabel(img), BorderLayout.CENTER);
             }
         }
         mainPanel.validate();
