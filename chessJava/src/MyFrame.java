@@ -589,29 +589,29 @@ public class MyFrame extends JFrame implements MouseListener {
     // Returns an ImageIcon for given piece
     public ImageIcon returnImg(String s, boolean color) {
         if (s.equals("Bishop") && color) {
-            return new ImageIcon("images/BishopW.png");
+            return new ImageIcon("./images/BishopW.png");
         } else if (s.equals("Bishop") && !color) {
-            return new ImageIcon("images/BishopB.png");
+            return new ImageIcon("./images/BishopB.png");
         } else if (s.equals("King") && color) {
-            return new ImageIcon("images/KingW.png");
+            return new ImageIcon("./images/KingW.png");
         } else if (s.equals("King") && !color) {
-            return new ImageIcon("images/KingB.png");
+            return new ImageIcon("./images/KingB.png");
         } else if (s.equals("Knight") && color) {
-            return new ImageIcon("images/HorseW.png");
+            return new ImageIcon("./images/HorseW.png");
         } else if (s.equals("Knight") && !color) {
-            return new ImageIcon("images/HorseB.png");
+            return new ImageIcon("./images/HorseB.png");
         } else if (s.equals("Pawn") && color) {
-            return new ImageIcon("images/PawnW.png");
+            return new ImageIcon("./images/PawnW.png");
         } else if (s.equals("Pawn") && !color) {
-            return new ImageIcon("images/PawnB.png");
+            return new ImageIcon("./images/PawnB.png");
         } else if (s.equals("Rook") && color) {
-            return new ImageIcon("images/RookW.png");
+            return new ImageIcon("./images/RookW.png");
         } else if (s.equals("Rook") && !color) {
-            return new ImageIcon("images/RookB.png");
+            return new ImageIcon("./images/RookB.png");
         } else if (s.equals("Queen") && color) {
-            return new ImageIcon("images/QueenW.png");
+            return new ImageIcon("./images/QueenW.png");
         } else if (s.equals("Queen") && !color) {
-            return new ImageIcon("images/QueenB.png");
+            return new ImageIcon("./images/QueenB.png");
         } else {
             return null;
         }
