@@ -4,5 +4,5 @@ Compile and run Chess.java
 
 ## TODO
 
-Refactor Code
+Refactor Code  
 Add AI
